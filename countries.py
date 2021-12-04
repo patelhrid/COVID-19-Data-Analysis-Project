@@ -1,0 +1,23 @@
+"""The Threat of Food Insecurity in Canada from the Economic Fallout of COVID-19
+
+Instructions
+============
+
+This Python module contains the main functions and blocks of code required to run the entire
+program. This module will load the necessary files from the datasets, perform computations on
+the data, and produce an interactive graph in your browser. (SUBJECT TO CHANGE)
+"""
+
+class Country:
+    """An abstract country."""
+    name: str
+    population: int
+    food_insecurity: float
+    confirmed_cases: int
+    unemployment: float
+    cpi: float
+    income: float
+
+    def __init__(self, name: str) -> None:
+        """Initialize attributes."""
+
