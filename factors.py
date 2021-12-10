@@ -115,7 +115,7 @@ def get_cpi_average(country: str) -> float:
         return average_value
 
 def get_cpi_percent(country: str) -> int:
-    """Get a country's consumer price index percentage for country."""
+    """Get a country's consumer price index percentage for food in 2020."""
     base_value = 100
     percent_value = get_cpi_average(country) - base_value
     return int(percent_value)
