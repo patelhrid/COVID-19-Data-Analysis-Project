@@ -11,6 +11,7 @@ import csv
 import json
 from scrapy import Spider, Request, settings, crawler
 import statistics
+from scrapy.crawler import CrawlerProcess
 
 
 COUNTRIES = ['Canada', 'United States', 'China', 'Japan', 'Russia', 'France',
@@ -25,14 +26,14 @@ class IncorrectCountryError(Exception):
         return 'Data on this country is not available'
 
 
-class FoodInsecurity(Spider):
-    """The level of food insecurity """
-    name = 'FoodInsecurity'
-    # req = Request("https://impact.economist.com/sustainability/project/food-security-index/Index/YoY")
-    # req.replace()
+class FoodSecurity(Spider):
+    """A spider that extracts data of food security levels in 2020 as a percentage."""
+    name = 'FoodSecurity'
+    allowed_domains = ['impact.economist.com']
 
     def start_requests(self) -> None:
-        """Start requests"""
+        """Generate Request objects from the given urls, and instantiate Response objects to be
+        passed as arguments to the parse method."""
         urls = [
             'https://impact.economist.com/sustainability/project/food-security-index/Index/YoY'
         ]
@@ -41,25 +42,34 @@ class FoodInsecurity(Spider):
             yield Request(url=url, callback=self.parse)
 
     def parse(self, response, **kwargs) -> None:
-        """TODO"""
-        with open('food_insecurity.json', 'w') as f:
-            for row in response.xpath('//*[@id="yeartoyear"]//tbody/tr'):
-                json.dump({
-                    row.xpath('td//text()')[1].get(): row.xpath('td//text()')[10].get()
-                }, f)
-                f.write(', ')
+        """Generates dictionaries mapping countries to food security levels in 2020."""
+        for row in response.xpath('//*[@id="yeartoyear"]//tbody/tr'):
+            yield {row.xpath('td//text()')[1].get(): row.xpath('td//text()')[10].get()}
 
-    # def _fetch_parse(self, response) -> None:
-    #     from scrapy.shell import inspect_response
-    #     inspect_response(response, self)
 
-    # def fetch(self, url):
-        # crawler.engine.schedule(Request(url, self._fetch_parse, priority=1000))
+def get_food_insecurity() -> dict[str, float]:
+    """Return the food insecurity levels of each country available in the dataset as a
+    percentage."""
+    process = CrawlerProcess(settings={'FEEDS': {'food_security.json': {'format': 'json',
+                                                                        'overwrite': True}, }, })
+    process.crawl(FoodSecurity)
+    process.start()
+
+    file = open('food_security.json')
+    data = json.load(file)
+
+    # ACCUMULATOR food_insecurity_so_far: the running dictionary mapping country to food insecurity
+    food_insecurity_so_far = {}
+
+    for dict in data:
+        country = list(dict.keys())[0]
+        food_insecurity_so_far[country] = round(100 - float(dict[country]), 1)
+
+    return food_insecurity_so_far
 
 
 def get_unemployment(country: str) -> int:
     """Return the population of the country from a dataset.
-
     # Preconditions:
     #     - the second last row for each country is the population in 2020
     """
@@ -74,32 +84,16 @@ def get_unemployment(country: str) -> int:
             current_country = row[0]
             if country == current_country:
                 unemployment_rate = float(row[-2])
-    
+
     if unemployment_rate == 0:
         raise IncorrectCountryError
 
     return unemployment_rate
 
 
-def get_income(country: str) -> float:
-    """ Get the average annual income per captia of a country
-    >>> get_income('Canada')
-    72259.55
-    """
-    filename = 'datasets/AV_AN_WAGE_30112021180149473 - income.csv'
-    with open(filename) as file:
-        reader = csv.reader(file)
-
-        next(reader)
-
-        for row in reader:
-            if row[1] == country and row[5] == '2020':
-                income = row[12]
-                return round(float(income), 2)
-
-
 def get_income_usd(country: str) -> float:
     """ Convert the income per capita of the country into US Dollars
+
     >>> get_income_usd('Canada')
     56674.16
     """
@@ -115,13 +109,37 @@ def get_income_usd(country: str) -> float:
                 return round(float(usd_income), 2)
 
 
+def get_income(country: str) -> float:
+    """ Get the average annual income per captia of a country
+
+    >>> get_income('Canada')
+    72259.55
+    """
+    filename = 'datasets/AV_AN_WAGE_30112021180149473 - income.csv'
+    with open(filename) as file:
+        reader = csv.reader(file)
+
+        next(reader)
+
+        for row in reader:
+            if row[1] == country and row[5] == '2020':
+                income = row[12]
+                return round(float(income), 2)
+
+
+def get_cpi_percent(country: str) -> int:
+    """Get a country's consumer price index percentage for food in 2020."""
+    base_value = 100
+    percent_value = get_cpi_average(country) - base_value
+    return int(percent_value)
+
 
 def get_cpi_average(country: str) -> float:
     """Get a country's average consumer price index for food in 2020."""
     filename = 'CPI.csv'
     with open(filename, 'r') as f:
         reader = csv.reader(f, delimiter=',')
-        header = next(reader)
+        next(reader)
 
         # ACCUMULATOR cpi_value_so_far: keeps track of each month's cpi value for a country.
         cpi_value_so_far = []
@@ -137,14 +155,10 @@ def get_cpi_average(country: str) -> float:
         average_value = statistics.mean(int_cpi_value_so_far)
         return average_value
 
-def get_cpi_percent(country: str) -> int:
-    """Get a country's consumer price index percentage for food in 2020."""
-    base_value = 100
-    percent_value = get_cpi_average(country) - base_value
-    return int(percent_value)
 
-def confirmed_cases() -> dict[str, float]:
-    """Update the amount of total cases for each country in filename."""
+def get_confirmed_cases() -> dict[str, float]:
+    """Return a dictionary mapping countries to their amount of COVID-19 cases as a percent of
+    the population."""
     filename = 'datasets/owid-covid-data - confirmed_cases.csv'
 
     # ACCUMULATOR confirmed_cases_so_far: the dictionary of confirmed cases for each country so far
@@ -182,13 +196,15 @@ def ppln(country: str) -> int:
             current_country = row[0]
             if country == current_country and row[-2].isdigit():
                 total_population = int(row[-2])
-    
+
     # might have to raise error in main file...
     # if total_population == 0:
     #     raise IncorrectCountryError
 
+    return total_population
 
-def percentage(numerator: int, denominator: int) -> float:  # maybe have to change
+
+def percentage(numerator: float, denominator: float) -> float:  # maybe have to change
     """Calculate"""
     return round((numerator / denominator) * 100, 2)
 
