@@ -57,23 +57,7 @@ class FoodInsecurity(Spider):
         # crawler.engine.schedule(Request(url, self._fetch_parse, priority=1000))
 
 
-class UnemploymentRate:
-    """The unemployment rate for a country in 2020.
-
-    Instance Attributes:
-        - percent: the percentage of unemployment rate
-    """
-    percent: float
-
-    def __init__(self) -> None:
-        """Initialize values for unemployment rate."""
-        self.percent = 0.0
-
-    def extract_data(self, filename: str, country: str) -> None:
-        """Update the percent of unemployment for country in filename."""
-
-
-def unemployment(country: str) -> int:
+def get_unemployment(country: str) -> int:
     """Return the population of the country from a dataset.
 
     # Preconditions:
@@ -94,43 +78,7 @@ def unemployment(country: str) -> int:
     return unemployment_rate
 
 
-class Unemployment:
-    """The unemployment rate for a country in 2020."""
-
-    def extract(self, country_name: str) -> int:
-        """Extract the data from the .csv file"""
-        file_name = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447 - unemployment.csv'
-        # Reading the file
-        with open(file_name) as file:
-            file_text = file.read()
-            file_lst = file_text.split('\"')
-
-        # Cleaning up file_lst to remove unnecessary characters
-        for x in file_lst:
-            if x == '' or x == ',' or x == ',\n\n':
-                file_lst.remove(x)
-
-        # Creating the empty table for the data
-        table = []
-        for _ in range(267):
-            table.append([])
-
-        # Filling in the table
-        x = 0
-        for k in table:
-            while file_lst[x] != ',\n':
-                k.append(file_lst[x])
-                x += 1
-            if file_lst[x] == ',\n':
-                x += 1
-
-        # Finding the desired country and the CPI of 2020 for that country
-        for x in table:
-            if x[0] == country_name:
-                return x[-1]
-
-
-def read_country_income(filename: str, country_name: str) -> str:
+def get_income(filename: str, country: str) -> str:
     """ Extraction """
     with open(filename) as file:
         reader = csv.reader(file)
@@ -138,7 +86,7 @@ def read_country_income(filename: str, country_name: str) -> str:
         next(reader)
 
         for row in reader:
-            if row[1] == country_name and row[5] == '2020':
+            if row[1] == country and row[5] == '2020':
                 income = row[12]
                 return income
 
