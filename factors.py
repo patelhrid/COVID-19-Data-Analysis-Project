@@ -93,43 +93,32 @@ def get_income(filename: str, country: str) -> str:
                 income = row[12]
                 return income
 
-# insert "get_cpi" function here
-class CPI:
-    """A country's consumer price index for food in 2020.
-    Instance Attributes:
-        - percent: the consumer price index as a percentage for the country
-    """
-    # Private Instance Attributes:
-    #     _average_value: the average CPI across the 12 months in 2020
-    _average_value: float
-    percent: float
+def get_cpi_average(country: str) -> float:
+    """Get a country's average consumer price index for food in 2020."""
+    filename = 'CPI.csv'
+    with open(filename, 'r') as f:
+        reader = csv.reader(f, delimiter=',')
+        header = next(reader)
 
-    def __init__(self) -> None:
-        """Initialize values for CPI."""
-        self._average_value = 0.0
-        self.percent = 0.0
+        # ACCUMULATOR cpi_value_so_far: keeps track of each month's cpi value for a country.
+        cpi_value_so_far = []
 
-    def calculate_average_cpi(self, country: str) -> float:
-        """Return and update the average CPI of country from filename."""
-        filename = 'FAOSTAT_data_12-9-2021.csv'
-        with open(filename, 'r') as file:
-            reader = csv.reader(file, delimiter=',')
-            header = next(reader)
+        for row in reader:
+            current_country = row[3]
+            cpi_value = row[11]
+            if country == current_country:
+                list.append(cpi_value_so_far, cpi_value)
+                # convert strings into floats
+        int_cpi_value_so_far = [float(x) for x in cpi_value_so_far]
+        # calculate the mean of all the cpi values over 12 months
+        average_value = statistics.mean(int_cpi_value_so_far)
+        return average_value
 
-            # ACCUMULATOR cpi_value_so_far: keeps track of each month's cpi value for a country.
-            cpi_value_so_far = []
-
-            for row in reader:
-                current_country = row[3]
-                cpi_value = row[11]
-                if country == current_country:
-                    list.append(cpi_value_so_far, cpi_value)
-                    # convert strings into integer
-            int_cpi_value_so_far = [float(x) for x in cpi_value_so_far]
-            # calculate the mean of all the cpi values over 12 months
-            self._average_value = statistics.mean(int_cpi_value_so_far)
-            return self._average_value
-
+def get_cpi_percent(country: str) -> int:
+    """Get a country's consumer price index percentage for country."""
+    base_value = 100
+    percent_value = get_cpi_average(country) - base_value
+    return int(percent_value)
 
 def confirmed_cases() -> dict[str, float]:
     """Update the amount of total cases for each country in filename."""
