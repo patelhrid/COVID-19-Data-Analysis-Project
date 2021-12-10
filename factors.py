@@ -51,7 +51,8 @@ def get_food_insecurity() -> dict[str, float]:
     """Return the food insecurity levels of each country available in the dataset as a
     percentage."""
     process = CrawlerProcess(settings={'FEEDS': {'food_security.json': {'format': 'json',
-                                                                        'overwrite': True}, }, })
+                                                                        'overwrite': True}, },
+                                       'LOG_ENABLED': False})
     process.crawl(FoodSecurity)
     process.start()
 
