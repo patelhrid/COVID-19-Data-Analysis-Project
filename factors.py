@@ -8,8 +8,8 @@ program. This module will load the necessary files from the datasets, perform co
 the data, and produce an interactive graph in your browser. (SUBJECT TO CHANGE)
 """
 import csv
-# import scrapy
-# from formulas import percentage
+import scrapy
+from formulas import percentage
 
 COUNTRIES = ['Canada', 'United States', 'China', 'Japan', 'Russia', 'France',
              'United Arab Emirates', 'United Kingdom']
@@ -23,19 +23,19 @@ class IncorrectCountryError(Exception):
         return 'Data on this country is not available'
 
 
-# class FoodInsecurity(scrapy.Spider):
-#     """The level of food insecurity """
-#     name = 'food insecurity'
-#     urls = ['https://impact.economist.com/sustainability/project/food-security-index/Index']
-#
-#     def parse(self, response, **kwargs) -> None:
-#         """TODO"""
-#         for quote in response.css('div.quote'):
-#             yield {
-#                 'text': quote.css('span.text::text').get(),
-#                 'author': quote.css('small.author::text').get(),
-#                 'tags': quote.css('div.tags a.tag::text').getall(),
-#             }
+class FoodInsecurity(scrapy.Spider):
+    """The level of food insecurity """
+    name = 'food insecurity'
+    urls = ['https://impact.economist.com/sustainability/project/food-security-index/Index']
+
+    def parse(self, response, **kwargs) -> None:
+        """TODO"""
+        for quote in response.css('div.quote'):
+            yield {
+                'text': quote.css('span.text::text').get(),
+                'author': quote.css('small.author::text').get(),
+                'tags': quote.css('div.tags a.tag::text').getall(),
+            }
 
 
 class Unemployment:
