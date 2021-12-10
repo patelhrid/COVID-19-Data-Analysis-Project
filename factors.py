@@ -74,6 +74,9 @@ def get_unemployment(country: str) -> int:
             current_country = row[0]
             if country == current_country:
                 unemployment_rate = float(row[-2])
+    
+    if unemployment_rate == 0:
+        raise IncorrectCountryError
 
     return unemployment_rate
 
