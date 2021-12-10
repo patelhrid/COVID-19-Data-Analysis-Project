@@ -98,6 +98,24 @@ def get_income(country: str) -> float:
                 return round(float(income), 2)
 
 
+def get_income_usd(country: str) -> float:
+    """ Convert the income per capita of the country into US Dollars
+    >>> get_income_usd('Canada')
+    56674.16
+    """
+    filename = 'datasets/RprtRateXchg_20201231_20201231.csv'
+    with open(filename) as file:
+        reader = csv.reader(file)
+
+        next(reader)
+
+        for row in reader:
+            if row[1] == country:
+                usd_income = get_income(country) / float(row[4])
+                return round(float(usd_income), 2)
+
+
+
 def get_cpi_average(country: str) -> float:
     """Get a country's average consumer price index for food in 2020."""
     filename = 'CPI.csv'
