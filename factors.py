@@ -9,7 +9,7 @@ the data, and produce an interactive graph in your browser. (SUBJECT TO CHANGE)
 """
 import csv
 import json
-from scrapy import Spider, Request, settings, crawler
+from scrapy import Spider, Request
 import statistics
 from scrapy.crawler import CrawlerProcess
 
