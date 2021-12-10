@@ -8,8 +8,8 @@ program. This module will load the necessary files from the datasets, perform co
 the data, and produce an interactive graph in your browser. (SUBJECT TO CHANGE)
 """
 import csv
-import scrapy
-from formulas import percentage
+# import scrapy
+# from formulas import percentage
 
 COUNTRIES = ['Canada', 'United States', 'China', 'Japan', 'Russia', 'France',
              'United Arab Emirates', 'United Kingdom']
@@ -23,19 +23,19 @@ class IncorrectCountryError(Exception):
         return 'Data on this country is not available'
 
 
-class FoodInsecurity(scrapy.Spider):
-    """The level of food insecurity """
-    name = 'food insecurity'
-    urls = ['https://impact.economist.com/sustainability/project/food-security-index/Index']
-
-    def parse(self, response, **kwargs) -> None:
-        """TODO"""
-        for quote in response.css('div.quote'):
-            yield {
-                'text': quote.css('span.text::text').get(),
-                'author': quote.css('small.author::text').get(),
-                'tags': quote.css('div.tags a.tag::text').getall(),
-            }
+# class FoodInsecurity(scrapy.Spider):
+#     """The level of food insecurity """
+#     name = 'food insecurity'
+#     urls = ['https://impact.economist.com/sustainability/project/food-security-index/Index']
+#
+#     def parse(self, response, **kwargs) -> None:
+#         """TODO"""
+#         for quote in response.css('div.quote'):
+#             yield {
+#                 'text': quote.css('span.text::text').get(),
+#                 'author': quote.css('small.author::text').get(),
+#                 'tags': quote.css('div.tags a.tag::text').getall(),
+#             }
 
 
 class Unemployment:
@@ -52,6 +52,34 @@ class Unemployment:
 
     def extract_data(self, filename: str, country: str) -> None:
         """Update the percent of unemployment for country in filename."""
+        # Reading the file
+        with open(filename) as file:
+            file_text = file.read()
+            file_lst = file_text.split('\"')
+
+        # Cleaning up file_lst to remove unnecessary characters
+        for x in file_lst:
+            if x == '' or x == ',' or x == ',\n\n':
+                file_lst.remove(x)
+
+        # Creating the empty table for the data
+        table = []
+        for _ in range(46):
+            table.append([])
+
+        # Filling in the table
+        x = 0
+        for k in table:
+            while file_lst[x] != ',\n':
+                k.append(file_lst[x])
+                x += 1
+            if file_lst[x] == ',\n':
+                x += 1
+
+        # Finding the desired country and the Unempyoment of 2020 for that country
+        for x in table:
+            if x[0] == country:
+                self.percent = float(x[-1])
 
 
 class CPI:
@@ -75,42 +103,6 @@ class CPI:
 
     def calculate_percent(self, filename: str, country: str) -> None:
         """Update the CPI percent for country from filename."""
-
-
-# Hrid
-class ConsumerPriceIndex:
-    """Consumer Price Index factor class"""
-
-    def extract(self, country_name: str, file_name: str) -> int:
-        """Extract the data from the .csv file"""
-        # Reading the file
-        with open(file_name) as file:
-            file_text = file.read()
-            file_lst = file_text.split('\"')
-
-        # Cleaning up file_lst to remove unnecessary characters
-        for x in file_lst:
-            if x == '' or x == ',' or x == ',\n\n':
-                file_lst.remove(x)
-
-        # Creating the empty table for the data
-        table = []
-        for _ in range(46):
-            table.append([])
-
-        # Filling in the table
-        x = 0
-        for k in table:
-            while file_lst[x] != ',\n':
-                k.append(file_lst[x])
-                x += 1
-            if file_lst[x] == ',\n':
-                x += 1
-
-        # Finding the desired country and the CPI of 2020 for that country
-        for x in table:
-            if x[0] == country_name:
-                return x[-1]
 
 
 class Income:
@@ -269,7 +261,6 @@ def population_all(filename: str) -> dict[str, int]:
                 countries_so_far[country] = int(row[-2])
 
     return countries_so_far
-
 
 # if __name__ == '__main__':
 #     import python_ta
