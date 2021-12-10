@@ -73,12 +73,33 @@ class UnemploymentRate:
         """Update the percent of unemployment for country in filename."""
 
 
+def unemployment(country: str) -> int:
+    """Return the population of the country from a dataset.
+
+    # Preconditions:
+    #     - the second last row for each country is the population in 2020
+    """
+    filename = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447 - unemployment.csv'
+    unemployment_rate = 0
+    with open(filename) as f:
+        # skip the first 5 lines
+        reader = csv.reader(f, delimiter=',')
+        _ = [next(reader) for _ in range(5)]
+
+        for row in reader:
+            current_country = row[0]
+            if country == current_country:
+                unemployment_rate = float(row[-2])
+
+    return unemployment_rate
+
+
 class Unemployment:
     """The unemployment rate for a country in 2020."""
 
     def extract(self, country_name: str) -> int:
         """Extract the data from the .csv file"""
-        file_name = 'API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447 - unemployment.csv'
+        file_name = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447 - unemployment.csv'
         # Reading the file
         with open(file_name) as file:
             file_text = file.read()
