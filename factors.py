@@ -93,7 +93,7 @@ def get_income(filename: str, country: str) -> str:
                 income = row[12]
                 return income
 
-
+# insert "get_cpi" function here
 class CPI:
     """A country's consumer price index for food in 2020.
     Instance Attributes:
@@ -131,146 +131,54 @@ class CPI:
             return self._average_value
 
 
-class Income:
-    """The average income for a country in 2020.
+def confirmed_cases() -> dict[str, float]:
+    """Update the amount of total cases for each country in filename."""
+    filename = 'datasets/owid-covid-data - confirmed_cases.csv'
 
-    Instance Attributes:
-        - percent: the percentage of income for a country, relative to the maximum and minimum \
-            wages of the countries in COUNTRIES
-    """
-    _value: float
-    _max_income: float
-    percent: float  # percent relative to the maximum and minimum wages?
+    # ACCUMULATOR confirmed_cases_so_far: the dictionary of confirmed cases for each country so far
+    confirmed_cases_so_far = {}
 
-    def __init__(self) -> None:
-        """Initialize values for income levels."""
-
-
-class ConfirmedCases:
-    """The amount of confirmed COVID-19 cases in 2020 of a country.
-
-    Instance Attributes:
-        - all_cases: countries mapping to their amount of confirmed cases
-        - percent: the percentage of confirmed cases in the population
-    """
-    all_cases: dict[str, int]
-    percent: float
-
-    def __init__(self) -> None:
-        """Initialize values for confirmed cases."""
-        self.all_cases = {}
-        self.percent = 0.0
-
-        self.total_cases('datasets/owid-covid-data - confirmed_cases.csv')
-
-    # def total_cases(self, filename: str, country: str) -> int:
-    #     """Update the amount of total cases and the percent of cases for country from filename.
-    #     """
-    #     with open(filename) as f:
-    #         # skip the first 8 lines
-    #         for _ in range(0, 8):
-    #             reader = csv.reader(f, delimiter=',')
-    #             next(reader)
-    #
-    #         for row in reader:
-    #             current_country = row[2]
-    #             if country == current_country and row[3] == '2020-12-31':
-    #                 confirmed_cases = float(row[4])
-    #                 self._total_value = int(confirmed_cases)
-    #
-    #     return self._total_value
-
-    def total_cases(self, filename: str) -> None:
-        """Update the amount of total cases for each country in filename.
-
-        Preconditions:
-            - filename == 'datasets/owid-covid-data - confirmed_cases.csv'  # prob change
-        """
-        with open(filename) as f:
-            reader = csv.reader(f, delimiter=',')
-            # skip the first 8 lines
-            _ = [next(reader) for _ in range(8)]
-
-            for row in reader:
-                if row[1] != '' and row[3] == '2020-12-31' and row[4] != '':
-                    country = row[2]
-                    confirmed_cases = float(row[4])
-                    self.all_cases[country] = int(confirmed_cases)
-
-        # self.total_value = amount_confirmed_cases(filename)[country]
-
-    def calculate_percent(self, country: str, population: int) -> None:
-        """Update the percent of total cases of country with population.
-
-        Preconditions:
-            - the second last row for each country is the population in 2020
-        """
-        if country not in self.all_cases:
-            raise IncorrectCountryError
-        else:
-            self.percent = percentage(self.all_cases[country], population)
-
-        # self.percent = round((self.total_value / population_all(filename)[self.country]) * 100, 2)
-
-        # with open(filename) as f:
-        #     # skip the first 5 lines
-        #     for _ in range(0, 5):
-        #         reader = csv.reader(f, delimiter=',')
-        #         next(reader)
-        #
-        #     for row in reader:
-        #         current_country = row[0]
-        #         if country == current_country:
-        #             self.percent = round(self.total_value / int(row[-2]), 2)
-
-
-def percentage(numerator: int, denominator: int) -> float:  # maybe have to change
-    """Calculate"""
-    return round((numerator / denominator) * 100, 2)
-
-
-# can probably remove these extra functions
-def amount_confirmed_cases(filename: str) -> dict[str, int]:
-    """Return a dictionary mapping each country to the amount of confirmed cases from filename.
-
-    Preconditions:
-        - # do we have to use python code?
-    """
     with open(filename) as f:
         reader = csv.reader(f, delimiter=',')
         # skip the first 8 lines
         _ = [next(reader) for _ in range(8)]
 
-        countries_so_far = {}
+        # depending on how the graphs look, may have to use number of cases, not percent
         for row in reader:
-            country = row[2]
-            if country in COUNTRIES and row[0].isalpha() and row[3] == '2020-12-31':
+            if row[1] != '' and row[3] == '2020-12-31' and row[4] != '' and ppln(row[2]) != 0:
+                country = row[2]
                 confirmed_cases = float(row[4])
-                total_cases_so_far = int(confirmed_cases)
-                countries_so_far[country] = total_cases_so_far
+                confirmed_cases_so_far[country] = percentage(confirmed_cases, ppln(country))
 
-    return countries_so_far
+    return confirmed_cases_so_far
 
 
-def population_all(filename: str) -> dict[str, int]:
-    """Return the population of each country from filename.
+def ppln(country: str) -> int:
+    """Return the population of the country from a dataset.
 
-    Preconditions:
-        - each country in COUNTRIES is in filename
-        - the second last row for each country is the population in 2020
+    # Preconditions:
+    #     - the second last row for each country is the population in 2020
     """
+    filename = 'datasets/API_SP.POP.TOTL_DS2_en_csv_v2_3358390.csv'
+    total_population = 0
     with open(filename) as f:
         # skip the first 5 lines
         reader = csv.reader(f, delimiter=',')
         _ = [next(reader) for _ in range(5)]
 
-        countries_so_far = {}
         for row in reader:
-            country = row[0]
-            if country in COUNTRIES:
-                countries_so_far[country] = int(row[-2])
+            current_country = row[0]
+            if country == current_country and row[-2].isdigit():
+                total_population = int(row[-2])
+    
+    # might have to raise error in main file...
+    # if total_population == 0:
+    #     raise IncorrectCountryError
 
-    return countries_so_far
+
+def percentage(numerator: int, denominator: int) -> float:  # maybe have to change
+    """Calculate"""
+    return round((numerator / denominator) * 100, 2)
 
 
 # if __name__ == '__main__':
