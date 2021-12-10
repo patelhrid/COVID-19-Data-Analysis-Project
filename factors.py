@@ -98,6 +98,9 @@ def get_income_usd(country: str) -> float:
     >>> get_income_usd('Canada')
     56674.16
     """
+    if country == 'United States':
+        return get_income(country)
+
     filename = 'datasets/RprtRateXchg_20201231_20201231.csv'
     with open(filename) as file:
         reader = csv.reader(file)
@@ -108,6 +111,8 @@ def get_income_usd(country: str) -> float:
             if row[1] == country:
                 usd_income = get_income(country) / float(row[4])
                 return round(float(usd_income), 2)
+
+    raise IncorrectCountryError
 
 
 def get_income(country: str) -> float:
