@@ -81,8 +81,12 @@ def get_unemployment(country: str) -> int:
     return unemployment_rate
 
 
-def get_income(filename: str, country: str) -> str:
-    """ Extraction """
+def get_income(country: str) -> float:
+    """ Get the average annual income per captia of a country
+    >>> get_income('Canada')
+    72259.55
+    """
+    filename = 'datasets/AV_AN_WAGE_30112021180149473 - income.csv'
     with open(filename) as file:
         reader = csv.reader(file)
 
@@ -91,7 +95,8 @@ def get_income(filename: str, country: str) -> str:
         for row in reader:
             if row[1] == country and row[5] == '2020':
                 income = row[12]
-                return income
+                return round(float(income), 2)
+
 
 def get_cpi_average(country: str) -> float:
     """Get a country's average consumer price index for food in 2020."""
