@@ -9,6 +9,7 @@ the data, and produce an interactive graph in your browser. (SUBJECT TO CHANGE)
 """
 import csv
 import scrapy
+import statistics
 from formulas import percentage
 
 COUNTRIES = ['Canada', 'United States', 'China', 'Japan', 'Russia', 'France',
@@ -81,10 +82,8 @@ class Unemployment:
             if x[0] == country:
                 self.percent = float(x[-1])
 
-
 class CPI:
     """A country's consumer price index for food in 2020.
-
     Instance Attributes:
         - percent: the consumer price index as a percentage for the country
     """
@@ -100,9 +99,28 @@ class CPI:
 
     def calculate_average_cpi(self, filename: str, country: str) -> float:
         """Return and update the average CPI of country from filename."""
+        with open(filename, 'r') as file:
+            reader = csv.reader(file, delimiter=',')
+            header = next(reader)
+
+            # ACCUMULATOR cpi_value_so_far: keeps track of each month's cpi value for a country.
+            cpi_value_so_far = []
+
+            for row in reader:
+                current_country = row[3]
+                cpi_value = row[11]
+                if country == current_country:
+                    list.append(cpi_value_so_far, cpi_value)
+                    # convert strings into integer
+            int_cpi_value_so_far = [float(x) for x in cpi_value_so_far]
+            # calculate the mean of all the cpi values over 12 months
+            self._average_value = statistics.mean(int_cpi_value_so_far)
+            return self._average_value
 
     def calculate_percent(self, filename: str, country: str) -> None:
         """Update the CPI percent for country from filename."""
+        base_value = 100
+        self.percent = int(CPI.calculate_average_cpi(filename, country) - base_value)
 
 
 class Income:
