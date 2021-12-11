@@ -154,15 +154,7 @@ def get_income(country: str) -> float:
                 income = row[12]
                 return round(float(income), 2)
 
-
-def get_cpi_percent(country: str) -> int:
-    """Get a country's consumer price index percentage for food in 2020."""
-    base_value = 100
-    percent_value = get_cpi_average(country) - base_value
-    return int(percent_value)
-
-
-def get_cpi_average(country: str) -> float:
+def get_cpi(country: str) -> float:
     """Get a country's average consumer price index for food in 2020."""
     filename = 'datasets/FAOSTAT_data_12-10-2021.csv'
     with open(filename, 'r') as f:
@@ -181,7 +173,7 @@ def get_cpi_average(country: str) -> float:
         int_cpi_value_so_far = [float(x) for x in cpi_value_so_far]
         # calculate the mean of all the cpi values over 12 months
         average_value = statistics.mean(int_cpi_value_so_far)
-        return average_value
+        return round(average_value, 2)
 
 
 def get_confirmed_cases() -> dict[str, float]:
