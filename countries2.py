@@ -8,7 +8,7 @@ program. This module will load the necessary files from the datasets, perform co
 the data, and produce an interactive graph in your browser. (SUBJECT TO CHANGE)
 """
 from factors import ppln, get_food_insecurity, get_confirmed_cases, get_unemployment, \
-    get_cpi_average, get_income_usd, FoodInsecurity
+    get_cpi, get_income_usd, FoodInsecurity
 
 
 # class FI:
