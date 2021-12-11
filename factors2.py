@@ -156,6 +156,11 @@ def get_income(country: str) -> float:
 
  def get_cpi(country: str) -> float:
     """Get a country's average consumer price index for food in 2020."""
+    # The dataset labels the US as 'United States of America', while other datasets refer to it
+    # as 'United States', so need to change input country to match this dataset
+    if country == 'United States':
+        country = country + ' of America'
+
     filename = 'datasets/FAOSTAT_data_12-10-2021.csv'
     with open(filename, 'r') as f:
         reader = csv.reader(f, delimiter=',')
@@ -169,8 +174,10 @@ def get_income(country: str) -> float:
             cpi_value = row[11]
             if country == current_country:
                 cpi_value_so_far.append(float(cpi_value))
+        # calculate the mean of all the cpi values over 12 months
         average_value = statistics.mean(cpi_value_so_far)
         return round(average_value, 2)
+      
 
 def get_confirmed_cases() -> dict[str, float]:
     """Return a dictionary mapping countries to their amount of COVID-19 cases as a percent of
