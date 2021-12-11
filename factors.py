@@ -14,7 +14,7 @@ import statistics
 from scrapy.crawler import CrawlerProcess
 
 
-COUNTRIES = ['Canada', 'United States', 'China', 'Japan', 'Russia', 'France',
+COUNTRIES = ['Canada', 'United States', 'China', 'Japan', 'Australia', 'France',
              'United Arab Emirates', 'United Kingdom']
 
 
