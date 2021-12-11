@@ -13,7 +13,6 @@ from scrapy import Spider, Request
 import statistics
 from scrapy.crawler import CrawlerProcess
 
-
 COUNTRIES = ['Canada', 'United States', 'China', 'Japan', 'Australia', 'France',
              'United Arab Emirates', 'United Kingdom']
 
@@ -97,7 +96,7 @@ def get_unemployment(country: str) -> int:
     # Preconditions:
     #     - the second last row for each country is the population in 2020
     """
-    filename = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447 - unemployment.csv'
+    filename = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447.csv'
     unemployment_rate = 0
     with open(filename) as f:
         # skip the first 5 lines
@@ -144,7 +143,7 @@ def get_income(country: str) -> float:
     >>> get_income('Canada')
     72259.55
     """
-    filename = 'datasets/AV_AN_WAGE_30112021180149473 - income.csv'
+    filename = 'datasets/AV_AN_WAGE_30112021180149473.csv'
     with open(filename) as file:
         reader = csv.reader(file)
 
@@ -155,7 +154,15 @@ def get_income(country: str) -> float:
                 income = row[12]
                 return round(float(income), 2)
 
-def get_cpi(country: str) -> float:
+
+def get_cpi_percent(country: str) -> int:
+    """Get a country's consumer price index percentage for food in 2020."""
+    base_value = 100
+    percent_value = get_cpi_average(country) - base_value
+    return int(percent_value)
+
+
+def get_cpi_average(country: str) -> float:
     """Get a country's average consumer price index for food in 2020."""
     filename = 'datasets/FAOSTAT_data_12-10-2021.csv'
     with open(filename, 'r') as f:
@@ -174,12 +181,13 @@ def get_cpi(country: str) -> float:
         int_cpi_value_so_far = [float(x) for x in cpi_value_so_far]
         # calculate the mean of all the cpi values over 12 months
         average_value = statistics.mean(int_cpi_value_so_far)
-        return round(average_value, 2)
+        return average_value
+
 
 def get_confirmed_cases() -> dict[str, float]:
     """Return a dictionary mapping countries to their amount of COVID-19 cases as a percent of
     the population."""
-    filename = 'datasets/owid-covid-data - confirmed_cases.csv'
+    filename = 'datasets/owid-covid-data.csv'
 
     # ACCUMULATOR confirmed_cases_so_far: the dictionary of confirmed cases for each country so far
     confirmed_cases_so_far = {}
@@ -227,7 +235,6 @@ def ppln(country: str) -> int:
 def percentage(numerator: float, denominator: float) -> float:  # maybe have to change
     """Calculate"""
     return round((numerator / denominator) * 100, 2)
-
 
 # if __name__ == '__main__':
 #     import python_ta
