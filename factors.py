@@ -14,10 +14,6 @@ import statistics
 from scrapy.crawler import CrawlerProcess
 
 
-COUNTRIES = ['Canada', 'United States', 'China', 'Japan', 'Australia', 'France',
-             'United Arab Emirates', 'United Kingdom']
-
-
 class IncorrectCountryError(Exception):
     """Exception raised when data for a country is not available in the datasets."""
 
@@ -74,7 +70,7 @@ def get_unemployment(country: str) -> int:
     # Preconditions:
     #     - the second last row for each country is the population in 2020
     """
-    filename = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447 - unemployment.csv'
+    filename = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447.csv'
     unemployment_rate = 0
     with open(filename) as f:
         # skip the first 5 lines
@@ -83,7 +79,14 @@ def get_unemployment(country: str) -> int:
 
         for row in reader:
             current_country = row[0]
-            if country == current_country:
+            if country in current_country:
+                unemployment_rate = float(row[-2])
+            elif (country == 'United States'
+                  or country == 'United States of America'
+                  or country == 'USA') \
+                    and (current_country == 'United States'
+                         or current_country == 'United States of America'
+                         or current_country == 'USA'):
                 unemployment_rate = float(row[-2])
 
     if unemployment_rate == 0:
@@ -108,7 +111,15 @@ def get_income_usd(country: str) -> float:
         next(reader)
 
         for row in reader:
-            if row[1] == country:
+            if country in row[1]:
+                usd_income = get_income(country) / float(row[4])
+                return round(float(usd_income), 2)
+            elif (country == 'United States'
+                  or country == 'United States of America'
+                  or country == 'USA') \
+                    and (row[1] == 'United States'
+                         or row[1] == 'United States of America'
+                         or row[1] == 'USA'):
                 usd_income = get_income(country) / float(row[4])
                 return round(float(usd_income), 2)
 
@@ -121,14 +132,22 @@ def get_income(country: str) -> float:
     >>> get_income('Canada')
     72259.55
     """
-    filename = 'datasets/AV_AN_WAGE_30112021180149473 - income.csv'
+    filename = 'datasets/AV_AN_WAGE_30112021180149473.csv'
     with open(filename) as file:
         reader = csv.reader(file)
 
         next(reader)
 
         for row in reader:
-            if row[1] == country and row[5] == '2020':
+            if country in row[1] and row[5] == '2020':
+                income = row[12]
+                return round(float(income), 2)
+            elif (country == 'United States'
+                  or country == 'United States of America'
+                  or country == 'USA') \
+                    and (row[1] == 'United States'
+                         or row[1] == 'United States of America'
+                         or row[1] == 'USA'):
                 income = row[12]
                 return round(float(income), 2)
 
@@ -142,7 +161,7 @@ def get_cpi_percent(country: str) -> int:
 
 def get_cpi_average(country: str) -> float:
     """Get a country's average consumer price index for food in 2020."""
-    filename = 'CPI.csv'
+    filename = 'datasets/FAOSTAT_data_12-10-2021.csv'
     with open(filename, 'r') as f:
         reader = csv.reader(f, delimiter=',')
         next(reader)
@@ -153,7 +172,14 @@ def get_cpi_average(country: str) -> float:
         for row in reader:
             current_country = row[3]
             cpi_value = row[11]
-            if country == current_country:
+            if country in current_country:
+                list.append(cpi_value_so_far, cpi_value)
+            elif (country == 'United States'
+                  or country == 'United States of America'
+                  or country == 'USA') \
+                    and (row[1] == 'United States'
+                         or row[1] == 'United States of America'
+                         or row[1] == 'USA'):
                 list.append(cpi_value_so_far, cpi_value)
                 # convert strings into floats
         int_cpi_value_so_far = [float(x) for x in cpi_value_so_far]
@@ -165,7 +191,7 @@ def get_cpi_average(country: str) -> float:
 def get_confirmed_cases() -> dict[str, float]:
     """Return a dictionary mapping countries to their amount of COVID-19 cases as a percent of
     the population."""
-    filename = 'datasets/owid-covid-data - confirmed_cases.csv'
+    filename = 'datasets/owid-covid-data.csv'
 
     # ACCUMULATOR confirmed_cases_so_far: the dictionary of confirmed cases for each country so far
     confirmed_cases_so_far = {}
@@ -200,12 +226,15 @@ def ppln(country: str) -> int:
 
         for row in reader:
             current_country = row[0]
-            if country == current_country and row[-2].isdigit():
+            if country in current_country and row[-2].isdigit():
                 total_population = int(row[-2])
-
-    # might have to raise error in main file...
-    # if total_population == 0:
-    #     raise IncorrectCountryError
+            elif (country == 'United States'
+                  or country == 'United States of America'
+                  or country == 'USA') \
+                    and (row[1] == 'United States'
+                         or row[1] == 'United States of America'
+                         or row[1] == 'USA'):
+                total_population = int(row[-2])
 
     return total_population
 
