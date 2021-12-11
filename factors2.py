@@ -172,7 +172,7 @@ def get_income(country: str) -> float:
         for row in reader:
             current_country = row[3]
             cpi_value = row[11]
-            if country == current_country:
+            if country in current_country:
                 cpi_value_so_far.append(float(cpi_value))
         # calculate the mean of all the cpi values over 12 months
         average_value = statistics.mean(cpi_value_so_far)
