@@ -8,6 +8,7 @@ program. This module will load the necessary files from the datasets, perform co
 the data, and produce an interactive graph in your browser. (SUBJECT TO CHANGE)
 """
 
+import plotly.graph_objects as go
 from countries import Country
 from scrapy.crawler import CrawlerProcess
 from factors2 import FoodInsecurity, FoodSecurity, get_confirmed_cases
@@ -43,7 +44,7 @@ def data_cases_vs_fi() -> dict[str, tuple[float, float]]:
 
     for country in countries:
         if country in confirmed_cases:
-            x, y = confirmed_cases[country], food_insecurity[country]
+            x, y = confirmed_cases[country], food_insecurity.percentages[country]
             data_so_far[country] = (x, y)
 
     return data_so_far
@@ -130,7 +131,7 @@ if __name__ == '__main__':
 
     plot_cases_vs_fi()
     plot_cases_vs_fi_countries()
-    
+
     # import python_ta
     #
     # python_ta.check_all(config={
