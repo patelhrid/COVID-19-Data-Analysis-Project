@@ -33,11 +33,11 @@ class Country:
     cpi: float
     income: float
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, food_insecurity_dict: dict) -> None:
         """Initialize the attributes of Country."""
         self.name = name
         self.population = ppln(self.name)
-        self.food_insecurity = factors.get_food_insecurity()[self.name]
+        self.food_insecurity = food_insecurity_dict[self.name]
         self.confirmed_cases = factors.get_confirmed_cases()[self.name]
         self.unemployment = factors.get_unemployment(self.name)
         self.cpi = factors.get_cpi_average(self.name)
@@ -59,7 +59,14 @@ def ppln(country: str) -> int:
 
         for row in reader:
             current_country = row[0]
-            if country == current_country:
+            if country in current_country:
+                total_population = int(row[-2])
+            elif (country == 'United States'
+                  or country == 'United States of America'
+                  or country == 'USA') \
+                    and (row[1] == 'United States'
+                         or row[1] == 'United States of America'
+                         or row[1] == 'USA'):
                 total_population = int(row[-2])
 
     return total_population
