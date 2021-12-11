@@ -7,6 +7,8 @@ This Python module contains the main functions and blocks of code required to ru
 program. This module will load the necessary files from the datasets, perform computations on
 the data, and produce an interactive graph in your browser. (SUBJECT TO CHANGE)
 """
+import math
+import statistics
 
 import plotly.graph_objects as go
 from countries import Country
@@ -122,6 +124,72 @@ def plot_cases_vs_fi_countries() -> None:
     fig.show()
 
 
+def plot_cases_to_unemployment() -> None:
+    """Create graph of Confirmed Cases vs. Unemployment rate"""
+    data = [(country.confirmed_cases, country.unemployment, country.name)
+            for country in COUNTRIES]
+
+    data.sort()
+
+    x_values = [country[0] / 100 for country in data]
+    y_values = [country[1] / 100 for country in data]
+    names = [country[2] for country in data]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=x_values,
+        y=y_values,
+        mode='lines+markers',
+        text=names,
+        hovertemplate='<b>%{text}</b><br><br>' +
+                      'Confirmed Cases: %{x:.2%}<br>' +
+                      'Unemployment: %{y:.1%}<br>' +
+                      '<extra></extra>'
+    ))
+
+    fig.update_layout(title={'text': 'Confirmed COVID-19 Cases vs Unemployment',
+                             'y': 0.92, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+                      xaxis_title='Confirmed Cases (%)',
+                      yaxis_title='Unemployment (%)')
+
+    # Line of best fit
+    lobf_x_values = []
+    lobf_y_values = []
+
+    # slope = (len(COUNTRIES) * sum(x * y for x in x_values for y in y_values)
+    #          - (sum(x_values) * sum(y_values))) / (len(COUNTRIES) * sum(x ** 2 for x in x_values)
+    #                                                - (sum(x_values)) ** 2)
+    slopes = []
+    for i in range(len(x_values) - 1):
+        slopes.append((x_values[i + 1] - x_values[i]) / (y_values[i + 1] - y_values[i]))
+    slope = statistics.mean(slopes)
+    y_intercept = (sum(y_values) - (slope * (sum(x_values)))) / len(COUNTRIES)
+
+    # For a meaningful LOBF
+    max_unemployment = max(country.unemployment for country in COUNTRIES) / 100
+    max_confirmed_cases = max(country.confirmed_cases for country in COUNTRIES)
+
+    for x in range(0, math.ceil(max_confirmed_cases) * 100, 1):  # * 100 for more points...
+        y = slope * (x / 10000) + y_intercept
+        if 0 < y < max_unemployment * 1.5:  # * 1.5 for a bit more insight
+            lobf_x_values.append(x / 10000)
+            lobf_y_values.append(y)
+
+    fig.add_trace(go.Scatter(
+        x=lobf_x_values,
+        y=lobf_y_values,
+        mode='lines',
+        name='Line of Best Fit',
+        hovertemplate='<b>Line of Best Fit</b><br><br>' +
+                      'Confirmed Cases: %{x:.2%}<br>' +
+                      'Unemployment: %{y:.1%}<br>' +
+                      '<extra></extra>',
+        line=dict(color='firebrick', width=2)
+    ))
+
+    fig.show()
+
+
 if __name__ == '__main__':
     process = CrawlerProcess(settings={'FEEDS': {'food_security.json': {'format': 'json',
                                                                         'overwrite': True}, },
@@ -129,8 +197,9 @@ if __name__ == '__main__':
     process.crawl(FoodSecurity)
     process.start()
 
-    plot_cases_vs_fi()
-    plot_cases_vs_fi_countries()
+    # plot_cases_vs_fi()
+    # plot_cases_vs_fi_countries()
+    # plot_cases_to_unemployment()
 
     # import python_ta
     #
