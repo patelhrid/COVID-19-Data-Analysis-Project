@@ -182,7 +182,7 @@ def get_cpi_average(country: str) -> float:
         int_cpi_value_so_far = [float(x) for x in cpi_value_so_far]
         # calculate the mean of all the cpi values over 12 months
         average_value = statistics.mean(int_cpi_value_so_far)
-        return average_value
+        return round(average_value, 2)
 
 
 def get_confirmed_cases() -> dict[str, float]:
