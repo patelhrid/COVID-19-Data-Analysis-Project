@@ -121,29 +121,29 @@ def plot_cases_vs_fi_countries() -> None:
     fig.show()
 
 
-# if __name__ == '__main__':
-# plot_cases_vs_fi()
-# plot_cases_vs_fi_countries()
-# import python_ta
-#
-# python_ta.check_all(config={
-#     'max-line-length': 100,
-#     'extra-imports': ['python_ta.contracts', 'factors'],
-#     'disable': ['R1705', 'C0200', 'E9998', 'E9999'],
-# })
-#
-# import python_ta.contracts
-#
-# python_ta.contracts.DEBUG_CONTRACTS = False
-# python_ta.contracts.check_all_contracts()
-#
-# import doctest
-#
-# doctest.testmod()
-
 if __name__ == '__main__':
     process = CrawlerProcess(settings={'FEEDS': {'food_security.json': {'format': 'json',
                                                                         'overwrite': True}, },
                                        'LOG_ENABLED': False})
     process.crawl(FoodSecurity)
     process.start()
+
+    plot_cases_vs_fi()
+    plot_cases_vs_fi_countries()
+    
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'max-line-length': 100,
+    #     'extra-imports': ['python_ta.contracts', 'factors'],
+    #     'disable': ['R1705', 'C0200', 'E9998', 'E9999'],
+    # })
+    #
+    # import python_ta.contracts
+    #
+    # python_ta.contracts.DEBUG_CONTRACTS = False
+    # python_ta.contracts.check_all_contracts()
+    #
+    # import doctest
+    #
+    # doctest.testmod()
