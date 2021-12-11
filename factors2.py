@@ -168,7 +168,7 @@ def get_cpi(country: str) -> float:
             current_country = row[3]
             cpi_value = row[11]
             if country == current_country:
-                list.append(cpi_value_so_far, cpi_value)
+                cpi_value_so_far.append(float(cpi_value))
                 # convert strings into floats
         int_cpi_value_so_far = [float(x) for x in cpi_value_so_far]
         # calculate the mean of all the cpi values over 12 months
