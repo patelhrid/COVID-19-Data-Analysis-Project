@@ -30,7 +30,7 @@ UK = Country('United Kingdom', food_insecurity.percentages)
 COUNTRIES = [CANADA, USA, UAE, FRANCE, CHINA, JAPAN, AUSTRALIA, UK]
 
 
-def data_cases_vs_fi() -> dict[str, tuple[float, float]]:
+def plot_data_cases_vs_fi() -> dict[str, tuple[float, float]]:
     """Return the data for the plot graphing confirmed cases vs food insecurity levels for each
     country.
 
@@ -124,7 +124,7 @@ def plot_cases_vs_fi_countries() -> None:
     fig.show()
 
 
-def plot_cases_to_unemployment() -> None:
+def plot_cases_vs_unemployment() -> None:
     """Create graph of Confirmed Cases vs. Unemployment rate"""
     data = [(country.confirmed_cases, country.unemployment, country.name)
             for country in COUNTRIES]
@@ -189,7 +189,7 @@ def plot_cases_to_unemployment() -> None:
 
     fig.show()
     
-def case_vs_income_plot() -> None:
+def plot_cases_vs_income_plot() -> None:
     """Create graph of Confirmed Cases Vs GDP per Capita"""
     data = [(country.confirmed_cases, country.income, country.name)
             for country in COUNTRIES]
