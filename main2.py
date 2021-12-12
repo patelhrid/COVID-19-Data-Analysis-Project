@@ -188,7 +188,8 @@ def plot_cases_vs_unemployment() -> None:
     ))
 
     fig.show()
-    
+
+
 def plot_cases_vs_income_plot() -> None:
     """Create graph of Confirmed Cases Vs GDP per Capita"""
     data = [(country.confirmed_cases, country.income, country.name)
@@ -216,7 +217,8 @@ def plot_cases_vs_income_plot() -> None:
                       yaxis_title='Income(USD)')
 
     fig.show()
-    
+
+
 def plot_cases_vs_cpi() -> None:
     """Create a graph of Confirmed Cases vs. Consumer Price Index."""
     data = [(country.confirmed_cases, country.cpi, country.name)
@@ -246,6 +248,7 @@ def plot_cases_vs_cpi() -> None:
                       yaxis_title='Consumer Price Index (%)')
 
     fig.show()
+
 
 if __name__ == '__main__':
     process = CrawlerProcess(settings={'FEEDS': {'food_security.json': {'format': 'json',

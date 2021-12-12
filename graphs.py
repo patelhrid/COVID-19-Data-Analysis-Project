@@ -69,8 +69,6 @@ def plot_cases_vs_fi() -> None:
 
     fig.show()
 
-    fig.show()
-
 
 def plot_cases_vs_fi_countries() -> None:
     """Graph the data for confirmed cases to food insecurity for specific countries."""
