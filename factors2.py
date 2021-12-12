@@ -113,6 +113,7 @@ def get_unemployment(country: str) -> int:
 
     return unemployment_rate
 
+
 def get_income_usd(country: str) -> int:
     """ Convert the income per capita of the country into US Dollars
 
@@ -132,7 +133,8 @@ def get_income_usd(country: str) -> int:
 
     raise IncorrectCountryError
 
- def get_cpi(country: str) -> float:
+
+def get_cpi(country: str) -> float:
     """Get a country's average consumer price index for food in 2020."""
     # The dataset labels the US as 'United States of America', while other datasets refer to it
     # as 'United States', so need to change input country to match this dataset

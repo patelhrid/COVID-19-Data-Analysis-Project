@@ -9,13 +9,16 @@ the data, and produce interactive graphs in your browser.
 """
 
 from scrapy.crawler import CrawlerProcess
-from factors import FoodSecurity, FoodInsecurity
-from graphs import plot_graph
+from factors2 import FoodSecurity, FoodInsecurity
+import graphs3
 
 
 def run_graph() -> None:
     """Generate a graph showing the food insecurity, confirmed cases, and different factors."""
-    plot_graph(food_insecurity)
+    graphs3.plot_cases_vs_food_insecurity(food_insecurity)
+    graphs3.plot_cases_vs_unemployment(food_insecurity)
+    graphs3.plot_cases_vs_cpi(food_insecurity)
+    graphs3.plot_cases_vs_income_plot(food_insecurity)
 
 
 if __name__ == '__main__':
