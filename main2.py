@@ -188,7 +188,34 @@ def plot_cases_to_unemployment() -> None:
     ))
 
     fig.show()
+    
+def case_vs_income_plot() -> None:
+    """Create graph of Confirmed Cases Vs GDP per Capita"""
+    data = [(country.confirmed_cases, country.income, country.name)
+            for country in COUNTRIES]
+    
+    x = [country[0] / 100 for country in data]
+    y = [country[1] for country in data]
+    country_names = [country[2] for country in data]
 
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=x,
+        y=y,
+        mode='markers',
+        text=country_names,
+        hovertemplate='<b>%{text}</b><br><br>' +
+                      'Confirmed Cases: %{x:.2%}<br>' +
+                      'GDP per Capita (USD): %{y:}<br>' +
+                      '<extra></extra>'
+    ))
+
+    fig.update_layout(title={'text': 'Confirmed COVID-19 Cases vs Income',
+                             'y': 0.92, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+                      xaxis_title='Confirmed Cases (%)',
+                      yaxis_title='Income(USD)')
+
+    fig.show()
 
 if __name__ == '__main__':
     process = CrawlerProcess(settings={'FEEDS': {'food_security.json': {'format': 'json',
