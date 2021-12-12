@@ -216,6 +216,36 @@ def case_vs_income_plot() -> None:
                       yaxis_title='Income(USD)')
 
     fig.show()
+    
+def plot_cases_vs_cpi() -> None:
+    """Create a graph of Confirmed Cases vs. Consumer Price Index."""
+    data = [(country.confirmed_cases, country.cpi, country.name)
+            for country in COUNTRIES]
+
+    data.sort()
+
+    x_values = [country[0] / 100 for country in data]
+    y_values = [country[1] / 100 for country in data]
+    country_names = [country[2] for country in data]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=x_values,
+        y=y_values,
+        mode='markers',
+        text=country_names,
+        hovertemplate='<b>%{text}</b><br><br>' +
+                      'Confirmed Cases: %{x:.2%}<br>' +
+                      'Consumer Price Index: %{y:.1%}<br>' +
+                      '<extra></extra>'
+    ))
+
+    fig.update_layout(title={'text': 'Confirmed COVID-19 Cases vs Consumer Price Index',
+                             'y': 0.92, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top'},
+                      xaxis_title='Confirmed Cases (%)',
+                      yaxis_title='Consumer Price Index (%)')
+
+    fig.show()
 
 if __name__ == '__main__':
     process = CrawlerProcess(settings={'FEEDS': {'food_security.json': {'format': 'json',
