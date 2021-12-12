@@ -9,7 +9,7 @@ the data, and produce interactive graphs in your browser.
 """
 
 from scrapy.crawler import CrawlerProcess
-from factors2 import FoodSecurity, FoodInsecurity
+from factors3 import FoodSecurity, FoodInsecurity
 import graphs3
 
 

@@ -8,9 +8,9 @@ using plotly.
 """
 
 import plotly.graph_objects as go
-from typing import Iterable
-from countries import Country
-from factors2 import FoodInsecurity, get_confirmed_cases
+# from typing import Iterable
+from countries3 import Country
+from factors3 import FoodInsecurity, get_confirmed_cases
 import math
 import statistics
 #
@@ -454,9 +454,6 @@ def plot_cases_vs_unemployment(food_insecurity: FoodInsecurity) -> None:
     lobf_x_values = []
     lobf_y_values = []
 
-    # slope = (len(COUNTRIES) * sum(x * y for x in x_values for y in y_values)
-    #          - (sum(x_values) * sum(y_values))) / (len(COUNTRIES) * sum(x ** 2 for x in x_values)
-    #                                                - (sum(x_values)) ** 2)
     slopes = []
     for i in range(len(x_values) - 1):
         slopes.append((x_values[i + 1] - x_values[i]) / (y_values[i + 1] - y_values[i]))
@@ -516,6 +513,40 @@ def plot_cases_vs_income_plot(food_insecurity: FoodInsecurity) -> None:
                       xaxis_title='Confirmed Cases (%)',
                       yaxis_title='Income(USD)')
 
+    # Line of best fit
+    lobf_x_values = []
+    lobf_y_values = []
+
+    slopes = []
+    for i in range(len(x) - 1):
+        if x[i + 1] is not None and x[i] is not None and y[i + 1] is not None and y[i] is not None\
+                and (y[i + 1] - y[i]) != 0:
+            slopes.append((x[i + 1] - x[i]) / (y[i + 1] - y[i]))
+    slope = statistics.mean(slopes)
+    y_intercept = (sum(y) - (slope * (sum(x)))) / len(countries)
+
+    # For a meaningful LOBF
+    max_income = max(country.income for country in countries)
+    max_confirmed_cases = max(country.confirmed_cases for country in countries)
+
+    for x in range(0, math.ceil(max_confirmed_cases) * 100, 1):     # * 100 for more points..
+        y = slope * (x / 100) + y_intercept
+        if 0 < y < max_income:
+            lobf_x_values.append(x / 10000)
+            lobf_y_values.append(y)
+
+    fig.add_trace(go.Scatter(
+        x=lobf_x_values,
+        y=lobf_y_values,
+        mode='lines',
+        name='Line of Best Fit',
+        hovertemplate='<b>Line of Best Fit</b><br><br>' +
+                      'Confirmed Cases: %{x:.2%}<br>' +
+                      'GDP per Capita (USD): %{y:}<br>' +
+                      '<extra></extra>',
+        line=dict(color='firebrick', width=2)
+    ))
+
     fig.show()
 
 
@@ -549,6 +580,39 @@ def plot_cases_vs_cpi(food_insecurity: FoodInsecurity) -> None:
                       xaxis_title='Confirmed Cases (%)',
                       yaxis_title='Consumer Price Index (%)')
 
+    # Line of best fit
+    lobf_x_values = []
+    lobf_y_values = []
+
+    slopes = []
+    for i in range(len(data) - 1):
+        slopes.append((x_values[i + 1] - x_values[i]) / (y_values[i + 1] - y_values[i]))
+
+    slope = statistics.mean(slopes)
+    y_intercept = (sum(y_values) - (slope * (sum(x_values)))) / len(countries)
+
+    # For a meaningful LOBF
+    max_cpi = max(country.cpi for country in countries) / 100
+    max_confirmed_cases = max(country.confirmed_cases for country in countries)
+
+    for x in range(0, math.ceil(max_confirmed_cases) * 100, 1):  # * 100 for more points...
+        y = slope * (x / 10000) + y_intercept
+        if 0 < y < max_cpi * 1.5:   # For a bit more insight...
+            lobf_x_values.append(x / 10000)
+            lobf_y_values.append(y)
+
+    fig.add_trace(go.Scatter(
+        x=lobf_x_values,
+        y=lobf_y_values,
+        mode='lines',
+        name='Line of Best Fit',
+        hovertemplate='<b>Line of Best Fit</b><br><br>' +
+                      'Confirmed Cases: %{x:.2%}<br>' +
+                      'CPI: %{y:.1%}<br>' +
+                      '<extra></extra>',
+        line=dict(color='firebrick', width=2)
+    ))
+
     fig.show()
 
 
@@ -558,13 +622,13 @@ def create_countries(food_insecurity: FoodInsecurity) -> list[Country]:
     Preconditions
         - food_insecurity.percentages != {}
     """
-    canada = Country('Canada', food_insecurity.percentages)
-    usa = Country('United States', food_insecurity.percentages)
-    uae = Country('United Arab Emirates', food_insecurity.percentages)
-    france = Country('France', food_insecurity.percentages)
-    china = Country('China', food_insecurity.percentages)
-    japan = Country('Japan', food_insecurity.percentages)
-    australia = Country('Australia', food_insecurity.percentages)
-    uk = Country('United Kingdom', food_insecurity.percentages)
+    canada = Country('Canada', food_insecurity)
+    usa = Country('United States', food_insecurity)
+    uae = Country('United Arab Emirates', food_insecurity)
+    # france = Country('France', food_insecurity)
+    china = Country('China', food_insecurity)
+    japan = Country('Japan', food_insecurity)
+    australia = Country('Australia', food_insecurity)
+    uk = Country('United Kingdom', food_insecurity)
 
-    return [canada, usa, japan, australia, uk, uae, france, china]
+    return [canada, usa, japan, australia, uk, uae, china]  # france

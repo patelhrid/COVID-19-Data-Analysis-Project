@@ -104,7 +104,7 @@ def get_unemployment(country: str) -> float:
     >>> get_unemployment('Canada')
     9.48
     """
-    filename = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447 - unemployment.csv'
+    filename = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447.csv'
 
     # ACCUMULATOR unemployment_rate: the running unemployment of country so far
     unemployment_rate = 0
@@ -158,7 +158,7 @@ def get_income(country: str) -> float:
     >>> get_income('Canada')
     72259.55
     """
-    filename = 'datasets/AV_AN_WAGE_30112021180149473 - income.csv'
+    filename = 'datasets/AV_AN_WAGE_30112021180149473.csv'
     with open(filename) as file:
         reader = csv.reader(file)
 
@@ -214,7 +214,7 @@ def get_cpi(country: str) -> float:
 def get_confirmed_cases() -> dict[str, float]:
     """Return a dictionary mapping countries to their amount of COVID-19 cases as a percent of
     the population."""
-    filename = 'datasets/owid-covid-data - confirmed_cases.csv'
+    filename = 'datasets/owid-covid-data.csv'
 
     # ACCUMULATOR confirmed_cases_so_far: the dictionary of confirmed cases for each country so far
     confirmed_cases_so_far = {}
