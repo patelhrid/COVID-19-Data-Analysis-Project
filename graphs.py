@@ -19,8 +19,8 @@ from factors import FoodInsecurity, get_confirmed_cases
 
 def plot_graph(food_insecurity: FoodInsecurity) -> None:
     """Graph the data for confirmed cases to food insecurity for all countries and
-    specific countries.
-
+    specific countries, with traces for each set of data. 
+    
     Preconditions
         - food_insecurity.percentages != {}
     """
