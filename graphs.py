@@ -171,6 +171,24 @@ def get_plot(x_values: list[float], y_values: list[float], countries: list[Count
         - countries is the list returned from the create_countries function
         - factor in ['Food Insecurity', 'Unemployment', 'Consumer Price Index', 'Income']
     """
+    if factor == 'Income':
+        # unit =...input f string
+        plot = go.Scatter(
+            x=x_values,
+            y=y_values,
+            mode='lines+markers',
+            name='Data',
+            text=countries,
+            hovertemplate='<b>%{text}</b><br><br>' +
+                          'Confirmed Cases: %{x:.2%}<br>' +
+                          'Income: %{y:}<br>' +
+                          '<extra></extra>',
+            showlegend=True,
+            visible=False
+        )
+
+        return plot
+
     plot = go.Scatter(
         x=x_values,
         y=y_values,
@@ -263,7 +281,7 @@ def get_data(countries: list[Country], factor: str) -> list[list]:
         data = [(country.confirmed_cases, country.cpi, country.name)
                 for country in countries]
     else:  # factor == 'Income'
-        data = [(country.confirmed_cases, country.income, country.name)
+        data = [(country.confirmed_cases, country.income * 100, country.name)
                 for country in countries]
     data.sort()
 
