@@ -1,6 +1,6 @@
-"""The Threat of Food Insecurity in Canada from the Economic Fallout of COVID-19
+"""Countries Affected by COVID-19 and their Attributes
 
-Instructions
+Description
 ============
 
 This Python module contains a class representing a country with several instance attributes
