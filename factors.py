@@ -136,9 +136,12 @@ def get_income_usd(country: str) -> float:
     56674.16
     """
     # Return the income level of the USA in USD, without needing to convert the value
+    Euro_Zone = ['Belgium', 'Germany', 'Ireland', 'Spain', 'France', 'Italy', 'Luxembourg', 'Netherlands', 'Austria', 'Portugal',
+                 'Finland', 'Greece', 'Slovenia', 'Cyprus', 'Malta', 'Slovakia', 'Estonia', 'Latvia', 'Lithuania']
+    
     if country == 'United States':
         return get_income(country)
-    elif country == 'Germany' or country == 'France':
+    elif country in Euro_Zone:
         country = 'Euro Zone'
     elif country == 'South Korea':
         country = 'Korea'
