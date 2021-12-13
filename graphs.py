@@ -1,6 +1,6 @@
 """Graphing COVID-19 Cases, Food Insecurity, and Other Economic Factors
 
-Instructions
+Description
 ============
 
 This Python module contains the functions that will create the plots of our datasets using plotly.
