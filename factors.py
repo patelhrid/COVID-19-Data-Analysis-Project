@@ -228,7 +228,12 @@ def get_cpi(country: str) -> float:
 
 def get_confirmed_cases() -> dict[str, float]:
     """Return a dictionary mapping countries to their amount of COVID-19 cases as a percent of
-    the population."""
+    the population.
+
+    >>> cases = get_confirmed_cases()
+    >>> cases['Canada']
+    1.55
+    """
     filename = 'datasets/confirmed_cases.csv'
 
     # ACCUMULATOR confirmed_cases_so_far: the dictionary of confirmed cases for each country so far
@@ -254,6 +259,9 @@ def ppln(country: str) -> int:
 
     Preconditions:
         - the second last row for each country is the population in 2020
+
+    >>> ppln('Canada')
+    38005238
     """
     filename = 'datasets/population.csv'
 
