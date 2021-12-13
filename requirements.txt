@@ -1,16 +1,12 @@
 # Python libraries for graphing:
-# The Threat of Food Insecurity in Canada from the Economic Fallout of COVID-19
+# The Global Threat of Food Insecurity from the Economic Fallout of COVID-19
 
 # Testing and code checking
 python-ta
 
 # Data extraction and visualization
-plotly
-scrapy
-
-# Data file storage
-json
-csv
+plotly==5.4.0
+scrapy==2.5.1
 
 # Performing calculations
 statistics
