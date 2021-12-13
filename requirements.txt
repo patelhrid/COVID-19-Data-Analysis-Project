@@ -1,10 +1,17 @@
-# CSC110 Fall 2020: Python libraries we'll be using this semester.
+# Python libraries for graphing:
+# The Threat of Food Insecurity in Canada from the Economic Fallout of COVID-19
 
 # Testing and code checking
-hypothesis
-pytest
 python-ta
 
-# Graphics and data visualization
+# Data extraction and visualization
 plotly
-pygame==2.0.0.dev10
+scrapy
+
+# Data file storage
+json
+csv
+
+# Performing calculations
+statistics
+math
