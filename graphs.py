@@ -4,16 +4,14 @@ Instructions
 ============
 
 This Python module contains the functions that will create the plots of our datasets using plotly.
-There are 8 main countries whose data is being plotted: Canada, United States, United Arab
-Emirates, France, China, Japan, Australia, and United Kingdom.
+There are 8 main countries whose data is being plotted: Canada, United States, France, Germany,
+Japan, South Korea, Australia, and United Kingdom.
 
 There are 5 plots with the independent variable as the percent of confirmed COVID-19 cases in
 each country. The first dependent variable is Food Insecurity for all countries whose data was
 available. The rest focus on the 8 countries listed above: Food Insecurity, Unemployment,
 Consumer Price Index, and Income.
 """
-import math
-import statistics
 import plotly.graph_objects as go
 from countries import Country
 from factors import FoodInsecurity, get_confirmed_cases
@@ -32,27 +30,33 @@ def plot_graph(food_insecurity: FoodInsecurity) -> None:
     confirmed_cases = get_confirmed_cases()
 
     # FOOD INSECURITY PLOTS
-    all_food_insecurity_plot = plot_fi_all(food_insecurity, confirmed_cases)
+    all_fi_data = data_fi_all(food_insecurity, confirmed_cases)
+    all_food_insecurity_plot = plot_fi_all(all_fi_data[0], all_fi_data[1], all_fi_data[2])
+    all_food_insecurity_lobf = get_lobf(all_fi_data[0], all_fi_data[1])
+
     food_insecurity_plot, food_insecurity_lobf = get_graphs('Food Insecurity', countries)
 
     # UNEMPLOYMENT, CPI, AND INCOME PLOTS
     unemployment_plot, unemployment_lobf = get_graphs('Unemployment', countries)
     cpi_plot, cpi_lobf = get_graphs('Consumer Price Index', countries)
-    # income_plot, income_lobf = get_graphs('Consumer Price Index', countries)
+    income_plot, income_lobf = get_graphs('Income', countries)
 
     # Create the plot and add traces for each graph
     fig = go.Figure()
     fig.add_trace(all_food_insecurity_plot)     # Trace 1
-    fig.add_trace(food_insecurity_plot)         # Trace 2
-    fig.add_trace(food_insecurity_lobf)         # Trace 3
-    fig.add_trace(unemployment_plot)            # Trace 4
-    fig.add_trace(unemployment_lobf)            # Trace 5
-    fig.add_trace(cpi_plot)                     # Trace 6
-    fig.add_trace(cpi_lobf)                     # Trace 7
+    fig.add_trace(all_food_insecurity_lobf)     # Trace 2
+    fig.add_trace(food_insecurity_plot)         # Trace 3
+    fig.add_trace(food_insecurity_lobf)         # Trace 4
+    fig.add_trace(unemployment_plot)            # Trace 5
+    fig.add_trace(unemployment_lobf)            # Trace 6
+    fig.add_trace(cpi_plot)                     # Trace 7
+    fig.add_trace(cpi_lobf)                     # Trace 8
+    fig.add_trace(income_plot)                  # Trace 9
+    fig.add_trace(income_lobf)                  # Trace 10
 
     # Change the initial titles of the plots
-    fig.update_layout(title={'text': 'Confirmed COVID-19 Cases vs Food Insecurity',
-                             'y': 0.932, 'x': 0.5, 'xanchor': 'center', 'yanchor': 'top',
+    fig.update_layout(title={'text': 'Confirmed COVID-19 Cases vs Food Insecurity (All)',
+                             'y': 0.932, 'x': 0.46, 'xanchor': 'center', 'yanchor': 'top',
                              'font': {'size': 25}},
                       xaxis_title='Confirmed Cases (%)',
                       yaxis_title='Food Insecurity (%)')
@@ -69,15 +73,17 @@ def plot_graph(food_insecurity: FoodInsecurity) -> None:
              buttons=list([
                  dict(label='All Countries',
                       method='update',
-                      args=[{'visible': [True, False, False, False, False, False, False]},
-                            {'title': 'Confirmed COVID-19 Cases vs Food Insecurity',
+                      args=[{'visible': [True, 'legendonly', False, False, False,
+                                         False, False, False, False, False]},
+                            {'title': 'Confirmed COVID-19 Cases vs Food Insecurity (All)',
                              'xaxis': {'title': 'Confirmed Cases (%)'},
                              'yaxis': {'title': 'Food Insecurity (%)'},
                              'font': {'size': 15},
                              }]),
                  dict(label='8 Countries',
                       method='update',
-                      args=[{'visible': [False, True, 'legendonly', False, False, False, False]},
+                      args=[{'visible': [False, False, True, 'legendonly', False,
+                                         False, False, False, False, False]},
                             {'title': 'Confirmed COVID-19 Cases vs Food Insecurity',
                              'xaxis': {'title': 'Confirmed Cases (%)'},
                              'yaxis': {'title': 'Food Insecurity (%)'},
@@ -94,7 +100,8 @@ def plot_graph(food_insecurity: FoodInsecurity) -> None:
              buttons=list([
                  dict(label='Unemployment',
                       method='update',
-                      args=[{'visible': [False, False, False, True, 'legendonly', False, False]},
+                      args=[{'visible': [False, False, False, False, True, 'legendonly',
+                                         False, False, False, False]},
                             {'title': 'Confirmed COVID-19 Cases vs Unemployment',
                              'xaxis': {'title': 'Confirmed Cases (%)'},
                              'yaxis': {'title': 'Unemployment Rate (%)'},
@@ -102,10 +109,20 @@ def plot_graph(food_insecurity: FoodInsecurity) -> None:
                              }]),
                  dict(label='CPI',
                       method='update',
-                      args=[{'visible': [False, False, False, False, False, True, 'legendonly']},
+                      args=[{'visible': [False, False, False, False, False,
+                                         False, True, 'legendonly', False, False]},
                             {'title': 'Confirmed COVID-19 Cases vs CPI',
                              'xaxis': {'title': 'Confirmed Cases (%)'},
                              'yaxis': {'title': 'Consumer Price Index (%)'},
+                             'font': {'size': 15}
+                             }]),
+                 dict(label='Income',
+                      method='update',
+                      args=[{'visible': [False, False, False, False, False,
+                                         False, False, False, True, 'legendonly']},
+                            {'title': 'Confirmed COVID-19 Cases vs Income',
+                             'xaxis': {'title': 'Confirmed Cases (%)'},
+                             'yaxis': {'title': 'Income Levels (%)'},
                              'font': {'size': 15}
                              }]),
              ]), )
@@ -170,62 +187,12 @@ def get_plot(x_values: list[float], y_values: list[float], countries: list[Count
     return plot
 
 
-def get_lobf2(x_values: list[float], y_values: list[float], countries: list[Country], factor: str) \
-        -> go.Scatter:
-    """Return a line plot with the line of best fit for unemployment rate and
-    confirmed cases.
-
-    Preconditions:
-        - x_values != []
-        - y_values != []
-        - countries != []
-        - countries is the list returned from the create_countries function
-        - factor in ['Food Insecurity', 'Unemployment', 'Consumer Price Index', 'Income']
-    """
-    # Line of best fit coordinates
-    lobf_x_values = []
-    lobf_y_values = []
-
-    slopes = []
-    for i in range(len(x_values) - 1):
-        slopes.append((x_values[i + 1] - x_values[i]) /
-                      (y_values[i + 1] - y_values[i]))
-    slope = statistics.mean(slopes)
-    y_intercept = (sum(y_values) - (slope * (sum(x_values)))) / len(countries)
-
-    # For a meaningful LOBF
-    max_unemployment = max(y_value for y_value in y_values)
-    max_confirmed_cases = max(x_value for x_value in x_values)
-
-    for x in range(0, math.ceil(max_confirmed_cases) * 620, 1):  # * 620 for more points...
-        y = slope * (x / 10000) + y_intercept
-        if 0 < y < max_unemployment * 1.5:  # * 1.5 for a bit more insight
-            lobf_x_values.append(x / 10000)
-            lobf_y_values.append(y)
-
-    lobf = go.Scatter(
-        x=lobf_x_values,
-        y=lobf_y_values,
-        mode='lines',
-        name='Line of Best Fit',
-        hovertemplate='<b>Line of Best Fit</b><br><br>' +
-                      'Confirmed Cases: %{x:.2%}<br>' +
-                      f'{factor}'': %{y:.1%}<br>' +
-                      '<extra></extra>',
-        line=dict(color='firebrick', width=2),
-        showlegend=True,
-        visible=False
-    )
-
-    return lobf
-
-
 def get_lobf(x_values: list[float], y_values: list[float]) -> go.Scatter:
     """Return a line plot with the line of best fit for unemployment rate and
     confirmed cases.
 
     Equation for line of best fit:
-    Let x1 and y1 be coordinates in the data. Let X and Y be the means of the x-values and y-values
+    Let x1 and y1 be coordinates in the data. Let X and Y be the means of the x-values and y-values.
         slope = summation((x1 - X)(y1 - y)) / summation((x1 - X)^2),
         y_intercept = Y - slope * x
 
@@ -257,6 +224,12 @@ def get_lobf(x_values: list[float], y_values: list[float]) -> go.Scatter:
         lobf_x_values.append(x)
         lobf_y_values.append(slope * x + y_intercept)
 
+    # If the line of best fit is for
+    if len(x_values) > 8:
+        visibility = 'legendonly'
+    else:
+        visibility = False
+
     lobf = go.Scatter(
         x=lobf_x_values,
         y=lobf_y_values,
@@ -264,7 +237,7 @@ def get_lobf(x_values: list[float], y_values: list[float]) -> go.Scatter:
         name='Line of Best Fit',
         line=dict(color='firebrick', width=2),
         showlegend=True,
-        visible=False
+        visible=visibility
     )
 
     return lobf
@@ -303,7 +276,7 @@ def get_data(countries: list[Country], factor: str) -> list[list]:
     return [x_values, y_values, countries]
 
 
-def plot_fi_all(food_insecurity: FoodInsecurity, confirmed_cases: dict[str, float]) -> go.Scatter:
+def plot_fi_all(x_values: list[float], y_values: list[float], countries: list[str]) -> go.Scatter:
     """Return a scatter plot displaying data in confirmed_cases as the x-values and data in
     food_insecurity as the y-values for all available countries.
 
@@ -311,17 +284,18 @@ def plot_fi_all(food_insecurity: FoodInsecurity, confirmed_cases: dict[str, floa
         - food_insecurity.percentages != {}
         - confirmed_cases != {}
     """
-    x_values, y_values, countries = data_fi_all(food_insecurity, confirmed_cases)
     plot = go.Scatter(
         x=x_values,
         y=y_values,
         mode='markers',
+        name='Data',
         text=countries,
         hovertemplate='<b>%{text}</b><br><br>' +
                       'Confirmed Cases: %{x:.2%}<br>' +
                       'Food Insecurity: %{y:.1%}<br>' +
                       '<extra></extra>',
-        showlegend=False,
+        showlegend=True,
+        visible=True
     )
 
     return plot
@@ -330,7 +304,7 @@ def plot_fi_all(food_insecurity: FoodInsecurity, confirmed_cases: dict[str, floa
 def data_fi_all(food_insecurity: FoodInsecurity, confirmed_cases: dict[str, float]) -> list[list]:
     """Return the data for the plot graphing confirmed cases vs food insecurity levels for each
     country as a list of x-values as the confirmed cases, y-values as the food insecurity level,
-    and country names.
+    and country names (strings).
 
     Preconditions
         - food_insecurity.percentages != {}
@@ -362,22 +336,21 @@ def create_countries(food_insecurity: FoodInsecurity) -> list[Country]:
     """
     canada = Country('Canada', food_insecurity)
     usa = Country('United States', food_insecurity)
-    # uae = Country('United Arab Emirates', food_insecurity)
-    # france = Country('France', food_insecurity)
-    # china = Country('China', food_insecurity)
+    france = Country('France', food_insecurity)
+    germany = Country('Germany', food_insecurity)
+    korea = Country('South Korea', food_insecurity)
     japan = Country('Japan', food_insecurity)
     australia = Country('Australia', food_insecurity)
     uk = Country('United Kingdom', food_insecurity)
 
-    return [canada, usa, japan, australia, uk]  # uae, france, china
+    return [canada, usa, japan, korea, australia, uk, germany, france]
 
 
 if __name__ == '__main__':
     import python_ta
 
     python_ta.check_all(config={
-        'extra-imports': ['python_ta.contracts', 'plotly.graph_objects', 'countries', 'factors',
-                          'statistics', 'math'],
+        'extra-imports': ['python_ta.contracts', 'plotly.graph_objects', 'countries', 'factors'],
         'max-line-length': 100,
         'disable': ['R1705', 'C0200', 'E9989', 'R1721'],
     })
