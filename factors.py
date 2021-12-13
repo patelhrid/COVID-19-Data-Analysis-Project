@@ -74,7 +74,7 @@ class FoodInsecurity:
 
         Preconditions:
             - the file 'food_security.json' created from FoodSecurity is in the same directory \
-                as 'main.py'  # not sure...
+                as 'main.py'
 
         Sample Usage:
         >>> fi = FoodInsecurity()
@@ -106,6 +106,9 @@ def get_unemployment(country: str) -> float:
     """
     filename = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447 - unemployment.csv'
 
+    if country == 'South Korea':
+        country = 'Korea, Rep.'
+
     # ACCUMULATOR unemployment_rate: the running unemployment of country so far
     unemployment_rate = 0
 
@@ -135,6 +138,10 @@ def get_income_usd(country: str) -> float:
     # Return the income level of the USA in USD, without needing to convert the value
     if country == 'United States':
         return get_income(country)
+    elif country == 'Germany' or country == 'France':
+        country = 'Euro Zone'
+    elif country == 'South Korea':
+        country = 'Korea'
 
     filename = 'datasets/RprtRateXchg_20201231_20201231.csv'
     with open(filename) as file:
@@ -185,6 +192,10 @@ def get_cpi(country: str) -> float:
     107.02
     """
     filename = 'datasets/FAOSTAT_data_12-10-2021.csv'
+
+    if country == 'South Korea':
+        country = 'Republic of Korea'
+
     with open(filename, 'r') as f:
         reader = csv.reader(f, delimiter=',')
 
@@ -242,6 +253,9 @@ def ppln(country: str) -> int:
     """
     filename = 'datasets/API_SP.POP.TOTL_DS2_en_csv_v2_3358390.csv'
 
+    if country == 'South Korea':
+        country = 'Korea, Rep.'
+
     # ACCUMULATOR total_population: the population of country in 2020 so far
     total_population = 0
 
@@ -255,10 +269,6 @@ def ppln(country: str) -> int:
             current_country = row[0]
             if country == current_country and row[-2].isdigit():
                 total_population = int(row[-2])
-
-    # might have to raise error in main file...
-    # if total_population == 0:
-    #     raise IncorrectCountryError
 
     return total_population
 
@@ -280,11 +290,11 @@ if __name__ == '__main__':
 
     python_ta.check_all(config={
         'extra-imports': ['python_ta.contracts', 'scrapy', 'csv', 'json', 'statistics'],
-        'allowed-io': ['FoodInsecurity().calculate_food_insecurity', 'get_unemployment',
+        'allowed-io': ['FoodInsecurity.calculate_food_insecurity', 'get_unemployment',
                        'get_income_usd', 'get_income', 'get_cpi',
-                       'ConfirmedCases().get_confirmed_cases', 'ppln'],
+                       'get_confirmed_cases', 'ppln'],
         'max-line-length': 100,
-        'disable': ['R1705', 'C0200', 'R1732'],
+        'disable': ['R1705', 'C0200', 'E9998'],
     })
 
     import python_ta.contracts
