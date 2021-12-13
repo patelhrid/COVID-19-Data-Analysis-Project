@@ -59,7 +59,8 @@ def plot_graph(food_insecurity: FoodInsecurity) -> None:
                              'y': 0.932, 'x': 0.46, 'xanchor': 'center', 'yanchor': 'top',
                              'font': {'size': 25}},
                       xaxis_title='Confirmed Cases (%)',
-                      yaxis_title='Food Insecurity (%)')
+                      yaxis_title='Food Insecurity (%)',
+                      legend={'font_size': 15})
 
     # Create buttons to toggle between the plots
     # The values in args correspond to each trace of fig: [Trace 1, Trace 2, Trace 3, ...] and so on
