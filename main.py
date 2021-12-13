@@ -4,9 +4,10 @@ Instructions
 ============
 
 This Python module contains the main function and blocks of code required to run the entire
-program. When this module is run, the food_security.json file is created from the factors module.
+program. When this module is run, the food_security.json file is created from the factors.py module.
 Call the show_graph function to produce interactive graphs in your browser of food insecurity,
-confirmed COVID-19 cases, and the potential factor influencing food insecurity!
+confirmed COVID-19 cases, and the potential economic factors impacted by the pandemic that
+influence food insecurity!
 """
 
 from scrapy.crawler import CrawlerProcess
