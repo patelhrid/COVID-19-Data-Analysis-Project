@@ -104,7 +104,7 @@ def get_unemployment(country: str) -> float:
     >>> get_unemployment('Canada')
     9.48
     """
-    filename = 'datasets/API_SL.UEM.TOTL.ZS_DS2_en_csv_v2_3358447 - unemployment.csv'
+    filename = 'datasets/unemployment.csv'
 
     if country == 'South Korea':
         country = 'Korea, Rep.'
@@ -143,7 +143,7 @@ def get_income_usd(country: str) -> float:
     elif country == 'South Korea':
         country = 'Korea'
 
-    filename = 'datasets/RprtRateXchg_20201231_20201231.csv'
+    filename = 'datasets/exchange_rates.csv'
     with open(filename) as file:
         reader = csv.reader(file)
 
@@ -165,7 +165,7 @@ def get_income(country: str) -> float:
     >>> get_income('Canada')
     72259.55
     """
-    filename = 'datasets/AV_AN_WAGE_30112021180149473 - income.csv'
+    filename = 'datasets/income.csv'
     with open(filename) as file:
         reader = csv.reader(file)
 
@@ -191,7 +191,7 @@ def get_cpi(country: str) -> float:
     >>> get_cpi('Canada')
     107.02
     """
-    filename = 'datasets/FAOSTAT_data_12-10-2021.csv'
+    filename = 'datasets/cpi.csv'
 
     if country == 'South Korea':
         country = 'Republic of Korea'
@@ -225,7 +225,7 @@ def get_cpi(country: str) -> float:
 def get_confirmed_cases() -> dict[str, float]:
     """Return a dictionary mapping countries to their amount of COVID-19 cases as a percent of
     the population."""
-    filename = 'datasets/owid-covid-data - confirmed_cases.csv'
+    filename = 'datasets/confirmed_cases.csv'
 
     # ACCUMULATOR confirmed_cases_so_far: the dictionary of confirmed cases for each country so far
     confirmed_cases_so_far = {}
@@ -251,7 +251,7 @@ def ppln(country: str) -> int:
     Preconditions:
         - the second last row for each country is the population in 2020
     """
-    filename = 'datasets/API_SP.POP.TOTL_DS2_en_csv_v2_3358390.csv'
+    filename = 'datasets/population.csv'
 
     if country == 'South Korea':
         country = 'Korea, Rep.'
