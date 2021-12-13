@@ -28,20 +28,3 @@ if __name__ == '__main__':
 
     food_insecurity = FoodInsecurity()
     food_insecurity.calculate_food_insecurity()
-
-    import python_ta
-
-    python_ta.check_all(config={
-        'extra-imports': ['python_ta.contracts', 'scrapy.crawler', 'factors', 'graphs'],
-        'max-line-length': 100,
-        'disable': ['R1705', 'C0200'],
-    })
-
-    import python_ta.contracts
-
-    python_ta.contracts.DEBUG_CONTRACTS = False
-    python_ta.contracts.check_all_contracts()
-
-    import doctest
-
-    doctest.testmod()
