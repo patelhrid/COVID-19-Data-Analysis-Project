@@ -7,7 +7,7 @@ This Python module contains a class representing a country with several instance
 representing the different factors we will be analyzing.
 """
 from factors import ppln, get_unemployment, get_cpi, get_income_usd, get_confirmed_cases, \
-     FoodInsecurity
+    FoodInsecurity, IncorrectCountryError
 
 
 class Country:
@@ -31,6 +31,7 @@ class Country:
         - 0 <= self.unemployment <= 100
         - self.cpi >= 0
         - self.income >= 0
+        - data for each attribute is available for the country
 
     Sample Usage:
     >>> fi = FoodInsecurity()
@@ -52,6 +53,11 @@ class Country:
     def __init__(self, name: str, fi: FoodInsecurity) -> None:
         """Initialize the attributes of Country."""
         self.name = name
+
+        # If no data is available for food insecurity or confirmed cases, raise an error
+        if name not in fi.percentages or name not in get_confirmed_cases():
+            raise IncorrectCountryError
+
         self.population = ppln(self.name)
         self.food_insecurity = fi.percentages[self.name]
         self.confirmed_cases = get_confirmed_cases()[self.name]
@@ -66,7 +72,7 @@ if __name__ == '__main__':
     python_ta.check_all(config={
         'max-line-length': 100,
         'extra-imports': ['python_ta.contracts', 'factors'],
-        'disable': ['R1705', 'C0200', 'E9998', 'E9999'],
+        'disable': ['R1705', 'C0200'],
     })
 
     import python_ta.contracts
