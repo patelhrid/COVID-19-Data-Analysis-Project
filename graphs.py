@@ -243,7 +243,8 @@ def get_lobf(x_values: list[float], y_values: list[float]) -> go.Scatter:
         lobf_x_values.append(x)
         lobf_y_values.append(slope * x + y_intercept)
 
-    # If the line of best fit is for
+    # If the line of best fit is for the graph returned from plot_fi_all, make the visibility of
+    # the line of best fit 'legendonly'
     if len(x_values) > 8:
         visibility = 'legendonly'
     else:
