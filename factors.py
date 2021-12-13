@@ -95,11 +95,46 @@ class FoodInsecurity:
             self.percentages[country] = round(100 - float(pair[country]), 1)
 
 
+def get_income_usd(country: str) -> float:
+    """Return the income per capita of country in US Dollars in 2020.
+
+    >>> get_income_usd('Canada')
+    56674.16
+    """
+    # Return the income level of the USA in USD, without needing to convert the value
+    euro_zone = ['Belgium', 'Germany', 'Ireland', 'Spain', 'France', 'Italy', 'Luxembourg', 'Netherlands', 'Austria',
+                 'Portugal',
+                 'Finland', 'Greece', 'Slovenia', 'Cyprus', 'Malta', 'Slovakia', 'Estonia', 'Latvia', 'Lithuania']
+
+    if country == 'United States':
+        return get_income(country)
+    elif country in euro_zone:
+        country = 'Euro Zone'
+    elif country == 'South Korea':
+        country = 'Korea'
+
+    filename = 'datasets/exchange_rates.csv'
+    with open(filename) as file:
+        reader = csv.reader(file)
+
+        # Skip the header
+        next(reader)
+
+        for row in reader:
+            if row[1] == country:
+                usd_income = get_income(country) / float(row[4])
+                return round(float(usd_income), 2)
+
+    # If no income level was found for country, raise an error
+    raise IncorrectCountryError
+
+
 def get_unemployment(country: str) -> float:
     """Return the unemployment rate of country from a dataset in 2020.
 
     Preconditions:
         - the second last row for each country is the population in 2020
+        - country is a valid country name
 
     >>> get_unemployment('Canada')
     9.48
@@ -127,39 +162,6 @@ def get_unemployment(country: str) -> float:
         raise IncorrectCountryError
 
     return unemployment_rate
-
-
-def get_income_usd(country: str) -> float:
-    """Return the income per capita of country in US Dollars in 2020.
-
-    >>> get_income_usd('Canada')
-    56674.16
-    """
-    # Return the income level of the USA in USD, without needing to convert the value
-    Euro_Zone = ['Belgium', 'Germany', 'Ireland', 'Spain', 'France', 'Italy', 'Luxembourg', 'Netherlands', 'Austria', 'Portugal',
-                 'Finland', 'Greece', 'Slovenia', 'Cyprus', 'Malta', 'Slovakia', 'Estonia', 'Latvia', 'Lithuania']
-    
-    if country == 'United States':
-        return get_income(country)
-    elif country in Euro_Zone:
-        country = 'Euro Zone'
-    elif country == 'South Korea':
-        country = 'Korea'
-
-    filename = 'datasets/exchange_rates.csv'
-    with open(filename) as file:
-        reader = csv.reader(file)
-
-        # Skip the header
-        next(reader)
-
-        for row in reader:
-            if row[1] == country:
-                usd_income = get_income(country) / float(row[4])
-                return round(float(usd_income), 2)
-
-    # If no income level was found for country, raise an error
-    raise IncorrectCountryError
 
 
 def get_income(country: str) -> float:
