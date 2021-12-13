@@ -132,6 +132,9 @@ def get_unemployment(country: str) -> float:
 def get_income_usd(country: str) -> float:
     """Return the income per capita of country in US Dollars in 2020.
 
+    Preconditions:
+        - country is a valid country name
+
     >>> get_income_usd('Canada')
     56674.16
     """
@@ -165,6 +168,9 @@ def get_income_usd(country: str) -> float:
 
 def get_income(country: str) -> float:
     """Return the average annual income per captia of country in 2020.
+
+    Preconditions:
+        - country is a valid country name
 
     >>> get_income('Canada')
     72259.55
@@ -258,7 +264,7 @@ def ppln(country: str) -> int:
     """Return the population of the country from a dataset.
 
     Preconditions:
-        - the second last row for each country is the population in 2020
+        - country is a valid country name
 
     >>> ppln('Canada')
     38005238
