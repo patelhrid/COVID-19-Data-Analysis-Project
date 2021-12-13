@@ -12,8 +12,8 @@ available. The rest focus on the 8 countries listed above: Food Insecurity, Unem
 Consumer Price Index, and Income.
 """
 import plotly.graph_objects as go
-from countries import Country
-from factors import FoodInsecurity, get_confirmed_cases
+from countries3 import Country
+from factors3 import FoodInsecurity, get_confirmed_cases
 import math
 import statistics
 
@@ -195,10 +195,11 @@ def get_lobf(x_values: list[float], y_values: list[float], countries: list[Count
     max_unemployment = max(y for y in y_values)
     max_confirmed_cases = max(x for x in x_values)
 
+    # Creating the points for the LOBF
     for x in range(0, math.ceil(max_confirmed_cases) * 620, 1):  # * 620 for more points...
-        y = slope * (x / 10000) + y_intercept
+        y = slope * (x / 10000) + y_intercept   # / 10000 instead of 100 to compensate for * 620
         if 0 < y < max_unemployment * 1.5:  # * 1.5 for a bit more insight
-            lobf_x_values.append(x / 10000)
+            lobf_x_values.append(x / 10000)     # / 10000 instead of 100 to compensate for * 620
             lobf_y_values.append(y)
 
     lobf = go.Scatter(
@@ -315,4 +316,4 @@ def create_countries(food_insecurity: FoodInsecurity) -> list[Country]:
     australia = Country('Australia', food_insecurity)
     uk = Country('United Kingdom', food_insecurity)
 
-    return [canada, usa, japan, australia, uk]  # uae, france, china
+    return [canada, usa, japan, uk, australia]  # uae, france, china
