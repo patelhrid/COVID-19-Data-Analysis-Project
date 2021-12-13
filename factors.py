@@ -1,6 +1,6 @@
 """Factors that Affect Food Insecurity or are Affected by COVID-19
 
-Instructions
+Description
 ============
 
 This Python module contains the functions and classes that extract and perform any necessary
