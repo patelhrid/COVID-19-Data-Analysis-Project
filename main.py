@@ -1,4 +1,4 @@
-"""The Threat of Food Insecurity in Canada from the Economic Fallout of COVID-19
+"""The Global Threat of Food Insecurity from the Economic Fallout of COVID-19
 
 Instructions
 ============
