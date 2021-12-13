@@ -133,7 +133,6 @@ def get_unemployment(country: str) -> float:
     """Return the unemployment rate of country from a dataset in 2020.
 
     Preconditions:
-        - the second last row for each country is the population in 2020
         - country is a valid country name
 
     >>> get_unemployment('Canada')
@@ -191,7 +190,7 @@ def get_cpi(country: str) -> float:
     """Return the average consumer price index for food of country in 2020.
 
     Preconditions:
-        - country is a valid country name  # not sure...
+        - country is a valid country name
 
     >>> get_cpi('Canada')
     107.02
