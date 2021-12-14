@@ -17,7 +17,8 @@ class Country:
     Instance Attributes:
         - name: the name of the country
         - population: the total population of the country
-        - food_insecurity: the percent of the country's population that is food insecure
+        - food_insecurity: the food insecurity index (a score out of 100 based on several \
+            indicators from the Global Food Security Index)
         - confirmed cases: the amount of confirmed COVID-19 cases as a percent of the population
         - unemployment: the unemployment rate of the country, as a percentage
         - cpi: the consumer price index for food
@@ -35,7 +36,7 @@ class Country:
 
     Sample Usage:
     >>> fi = FoodInsecurity()
-    >>> fi.percentages = {'Canada': 22.0}
+    >>> fi.index = {'Canada': 22.0}
     >>> canada = Country('Canada', fi)
     >>> canada.name
     'Canada'
@@ -55,11 +56,11 @@ class Country:
         self.name = name
 
         # If no data is available for food insecurity or confirmed cases, raise an error
-        if name not in fi.percentages or name not in get_confirmed_cases():
+        if name not in fi.index or name not in get_confirmed_cases():
             raise IncorrectCountryError
 
         self.population = ppln(self.name)
-        self.food_insecurity = fi.percentages[self.name]
+        self.food_insecurity = fi.index[self.name]
         self.confirmed_cases = get_confirmed_cases()[self.name]
         self.unemployment = get_unemployment(self.name)
         self.cpi = get_cpi(self.name)
