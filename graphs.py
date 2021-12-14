@@ -1,4 +1,4 @@
-"""Graphing COVID-19 Cases, Food Insecurity, and Other Economic Factors
+"""Graphing Confirmed COVID-19 Cases, Food Insecurity, and Other Economic Factors
 
 Description
 ============
@@ -22,7 +22,7 @@ def plot_graph(food_insecurity: FoodInsecurity) -> None:
     specific countries, with traces for each set of data.
 
     Preconditions
-        - food_insecurity.percentages != {}
+        - food_insecurity.index != {}
     """
 
     # Create the 8 countries as Country objects and get the data for confirmed cases
@@ -146,14 +146,17 @@ def plot_graph(food_insecurity: FoodInsecurity) -> None:
 
 
 def get_graphs(factor: str, countries: list[Country]) -> list[go.Scatter]:
-    """Return a list of scatter plots, the first being the main plot, and the second being the
-    line of best fit plot.
+    """Return a list of scatter plots displaying the factor data for countries. The first is the
+    main plot, and the second is the line of best fit plot.
 
     Preconditions
         - countries is the list returned from the create_countries function
         - factor in ['Food Insecurity', 'Unemployment', 'Consumer Price Index', 'Income']
     """
+    # Unpack the data
     x, y, c = get_data(countries, factor)
+
+    # Create and return the 2 plots
     main_plot = get_plot(x, y, c, factor)
     line_of_best_fit = get_lobf(x, y)
     return [main_plot, line_of_best_fit]
@@ -167,10 +170,12 @@ def get_plot(x_values: list[float], y_values: list[float], countries: list[Count
     Preconditions:
         - x_values != []
         - y_values != []
+        - len(x_values) == len(y_values)
         - countries != []
         - countries is the list returned from the create_countries function
         - factor in ['Food Insecurity', 'Unemployment', 'Consumer Price Index', 'Income']
     """
+    # Assign the unit displayed in the hover text of the graph ($, %, etc.)
     if factor == 'Income':
         unit = '{y:$,.2f}'
     elif factor == 'Unemployment':
@@ -178,6 +183,7 @@ def get_plot(x_values: list[float], y_values: list[float], countries: list[Count
     else:
         unit = '{y:.2f}'
 
+    # Create the plot
     plot = go.Scatter(
         x=x_values,
         y=y_values,
@@ -196,11 +202,10 @@ def get_plot(x_values: list[float], y_values: list[float], countries: list[Count
 
 
 def get_lobf(x_values: list[float], y_values: list[float]) -> go.Scatter:
-    """Return a line plot with the line of best fit for unemployment rate and
-    confirmed cases.
+    """Return a line plot with the line of best fit, given x_values and y_values.
 
-    Equation for line of best fit:
-    Let x1 and y1 be coordinates in the data. Let X and Y be the means of the x-values and y-values.
+    Equation for line of best fit (least square method):
+    Let x1 and y1 be each coordinate in the data, X and Y be the means of the x-values and y-values.
         slope = summation((x1 - X)(y1 - y)) / summation((x1 - X)^2),
         y_intercept = Y - slope * x
 
@@ -210,9 +215,10 @@ def get_lobf(x_values: list[float], y_values: list[float]) -> go.Scatter:
         - len(x_values) == len(y_values)
     """
     # Calculate the slope and y-intercept for the line of best fit
-    # ACCUMULATORS: the running numerator and denominator of the equation for line of best fit
+    # ACCUMULATORS: the numerator and denominator of the equation for line of best fit so far
     numerator_so_far = 0
     denominator_so_far = 0
+
     x_mean = sum(x_values) / len(x_values)
     y_mean = sum(y_values) / len(y_values)
 
@@ -232,8 +238,8 @@ def get_lobf(x_values: list[float], y_values: list[float]) -> go.Scatter:
         lobf_x_values.append(x)
         lobf_y_values.append(slope * x + y_intercept)
 
-    # If the line of best fit is for the graph returned from plot_fi_all, make the visibility of
-    # the line of best fit 'legendonly'
+    # If the line of best fit is for the graph returned from plot_fi_all, make the visibility
+    #  'legendonly' so it is not initially displayed when the figure is first opened
     if len(x_values) > 8:
         visibility = 'legendonly'
     else:
@@ -254,16 +260,16 @@ def get_lobf(x_values: list[float], y_values: list[float]) -> go.Scatter:
 
 
 def get_data(countries: list[Country], factor: str) -> list[list]:
-    """Return the data for the plot showing data for the 8 specific countries. The data returned
-     is a list of x-values as the confirmed cases, y-values as the factor values, and country names.
+    """Return the data for the plot showing the 8 specific countries. The data returned is a
+    list of x-values as the confirmed cases, y-values as the factor values, and country names.
 
     Preconditions
         - countries is the list returned from the create_countries function
-        - factor in ['Unemployment', 'Consumer Price Index', 'Income']
+        - factor in ['Food Insecurity', 'Unemployment', 'Consumer Price Index', 'Income']
     """
     # Get the proper y-values, depending on the factor input
     # Dividing some values by 100 to get decimal values that will later be converted to
-    # percentages on the plot
+    # percentages in the hover text on the plot
     if factor == 'Food Insecurity':
         data = [(country.confirmed_cases, country.food_insecurity, country.name)
                 for country in countries]
@@ -287,12 +293,15 @@ def get_data(countries: list[Country], factor: str) -> list[list]:
 
 
 def plot_fi_all(x_values: list[float], y_values: list[float], countries: list[str]) -> go.Scatter:
-    """Return a scatter plot displaying data in confirmed_cases as the x-values and data in
-    food_insecurity as the y-values for all available countries.
+    """Return a scatter plot displaying confirmed_cases as the x-values and food insecurity as the
+    y-values for all available countries.
 
     Preconditions:
-        - food_insecurity.percentages != {}
-        - confirmed_cases != {}
+        - x_values != []
+        - y_values != []
+        - len(x_values) == len(y_values)
+        - countries != []
+        - data for food insecurity and confirmed cases is available for each country in countries
     """
     plot = go.Scatter(
         x=x_values,
@@ -312,12 +321,12 @@ def plot_fi_all(x_values: list[float], y_values: list[float], countries: list[st
 
 
 def data_fi_all(food_insecurity: FoodInsecurity, confirmed_cases: dict[str, float]) -> list[list]:
-    """Return the data for the plot graphing confirmed cases vs food insecurity levels for each
-    country as a list of x-values as the confirmed cases, y-values as the food insecurity level,
-    and country names (strings).
+    """Return the data for the plot graphing confirmed cases vs food insecurity levels for all
+    available countries as a list of x-values as the confirmed cases, y-values as the food
+    insecurity level, and country names (strings).
 
     Preconditions
-        - food_insecurity.percentages != {}
+        - food_insecurity.index != {}
         - confirmed_cases != {}
     """
     # ACCUMULATORS: the data for confirmed cases and food insecurity so far
@@ -325,13 +334,13 @@ def data_fi_all(food_insecurity: FoodInsecurity, confirmed_cases: dict[str, floa
     y_values = []
     countries_so_far = []
 
-    countries = [key for key in food_insecurity.percentages]
+    countries = [key for key in food_insecurity.index]
 
     for country in countries:
-        # Only get data for the countries in both food_insecurity.percentages and confirmed_cases
+        # Only get data for the countries in both food_insecurity.index and confirmed_cases
         if country in confirmed_cases:
             x_values.append(confirmed_cases[country] / 100)
-            y_values.append(food_insecurity.percentages[country])
+            y_values.append(food_insecurity.index[country])
             countries_so_far.append(country)
 
     return [x_values, y_values, countries_so_far]
@@ -341,7 +350,7 @@ def create_countries(food_insecurity: FoodInsecurity) -> list[Country]:
     """Return a list of 8 Country objects that will be plotted on the graph.
 
     Preconditions
-        - food_insecurity.percentages != {}
+        - food_insecurity.index != {}
         - data for the Country attributes is available for each Country made
     """
     canada = Country('Canada', food_insecurity)
