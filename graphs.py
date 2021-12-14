@@ -19,8 +19,8 @@ from factors import FoodInsecurity, get_confirmed_cases
 
 def plot_graph(food_insecurity: FoodInsecurity) -> None:
     """Graph the data for confirmed cases to food insecurity for all countries and
-    specific countries, with traces for each set of data. 
-    
+    specific countries, with traces for each set of data.
+
     Preconditions
         - food_insecurity.percentages != {}
     """
@@ -55,11 +55,11 @@ def plot_graph(food_insecurity: FoodInsecurity) -> None:
     fig.add_trace(income_lobf)                  # Trace 10
 
     # Change the initial titles of the plots
-    fig.update_layout(title={'text': 'Confirmed COVID-19 Cases vs Food Insecurity (All)',
+    fig.update_layout(title={'text': 'Confirmed COVID-19 Cases vs Food Insecurity in 2020 (All)',
                              'y': 0.932, 'x': 0.46, 'xanchor': 'center', 'yanchor': 'top',
                              'font': {'size': 25}},
-                      xaxis_title='Confirmed Cases (%)',
-                      yaxis_title='Food Insecurity (%)',
+                      xaxis_title='Total Confirmed Cases (% of population)',
+                      yaxis_title='Food Insecurity Index',
                       legend={'font_size': 15})
 
     # Create buttons to toggle between the plots
@@ -76,18 +76,18 @@ def plot_graph(food_insecurity: FoodInsecurity) -> None:
                       method='update',
                       args=[{'visible': [True, 'legendonly', False, False, False,
                                          False, False, False, False, False]},
-                            {'title': 'Confirmed COVID-19 Cases vs Food Insecurity (All)',
-                             'xaxis': {'title': 'Confirmed Cases (%)'},
-                             'yaxis': {'title': 'Food Insecurity (%)'},
+                            {'title': 'Confirmed COVID-19 Cases vs Food Insecurity in 2020 (All)',
+                             'xaxis': {'title': 'Total Confirmed Cases (% of population)'},
+                             'yaxis': {'title': 'Food Insecurity Index'},
                              'font': {'size': 15},
                              }]),
                  dict(label='8 Countries',
                       method='update',
                       args=[{'visible': [False, False, True, 'legendonly', False,
                                          False, False, False, False, False]},
-                            {'title': 'Confirmed COVID-19 Cases vs Food Insecurity',
-                             'xaxis': {'title': 'Confirmed Cases (%)'},
-                             'yaxis': {'title': 'Food Insecurity (%)'},
+                            {'title': 'Confirmed COVID-19 Cases vs Food Insecurity in 2020',
+                             'xaxis': {'title': 'Total Confirmed Cases (% of population)'},
+                             'yaxis': {'title': 'Food Insecurity Index'},
                              'font': {'size': 15}
                              }]),
              ]), ),
@@ -103,27 +103,27 @@ def plot_graph(food_insecurity: FoodInsecurity) -> None:
                       method='update',
                       args=[{'visible': [False, False, False, False, True, 'legendonly',
                                          False, False, False, False]},
-                            {'title': 'Confirmed COVID-19 Cases vs Unemployment',
-                             'xaxis': {'title': 'Confirmed Cases (%)'},
-                             'yaxis': {'title': 'Unemployment Rate (%)'},
+                            {'title': 'Confirmed COVID-19 Cases vs Unemployment in 2020',
+                             'xaxis': {'title': 'Total Confirmed Cases (% of population)'},
+                             'yaxis': {'title': 'Average Unemployment Rate (%)'},
                              'font': {'size': 15},
                              }]),
                  dict(label='CPI',
                       method='update',
                       args=[{'visible': [False, False, False, False, False,
                                          False, True, 'legendonly', False, False]},
-                            {'title': 'Confirmed COVID-19 Cases vs CPI',
-                             'xaxis': {'title': 'Confirmed Cases (%)'},
-                             'yaxis': {'title': 'Consumer Price Index (%)'},
+                            {'title': 'Confirmed COVID-19 Cases vs CPI in 2020',
+                             'xaxis': {'title': 'Total Confirmed Cases (% of population)'},
+                             'yaxis': {'title': 'Average Consumer Prices, Food Indices'},
                              'font': {'size': 15}
                              }]),
                  dict(label='Income',
                       method='update',
                       args=[{'visible': [False, False, False, False, False,
                                          False, False, False, True, 'legendonly']},
-                            {'title': 'Confirmed COVID-19 Cases vs Income',
-                             'xaxis': {'title': 'Confirmed Cases (%)'},
-                             'yaxis': {'title': 'Income Levels (%)'},
+                            {'title': 'Confirmed COVID-19 Cases vs Income in 2020',
+                             'xaxis': {'title': 'Total Confirmed Cases (% of population)'},
+                             'yaxis': {'title': 'Average Income Levels (USD)'},
                              'font': {'size': 15}
                              }]),
              ]), )
@@ -172,22 +172,11 @@ def get_plot(x_values: list[float], y_values: list[float], countries: list[Count
         - factor in ['Food Insecurity', 'Unemployment', 'Consumer Price Index', 'Income']
     """
     if factor == 'Income':
-        # unit =...input f string
-        plot = go.Scatter(
-            x=x_values,
-            y=y_values,
-            mode='lines+markers',
-            name='Data',
-            text=countries,
-            hovertemplate='<b>%{text}</b><br><br>' +
-                          'Confirmed Cases: %{x:.2%}<br>' +
-                          'Income: %{y:}<br>' +
-                          '<extra></extra>',
-            showlegend=True,
-            visible=False
-        )
-
-        return plot
+        unit = '{y:$,.2f}'
+    elif factor == 'Unemployment':
+        unit = '{y:.2%}'
+    else:
+        unit = '{y:.2f}'
 
     plot = go.Scatter(
         x=x_values,
@@ -197,7 +186,7 @@ def get_plot(x_values: list[float], y_values: list[float], countries: list[Count
         text=countries,
         hovertemplate='<b>%{text}</b><br><br>' +
                       'Confirmed Cases: %{x:.2%}<br>' +
-                      f'{factor}'': %{y:.1%}<br>' +
+                      f'{factor}'': %'f'{unit}''<br>' +
                       '<extra></extra>',
         showlegend=True,
         visible=False
@@ -257,7 +246,8 @@ def get_lobf(x_values: list[float], y_values: list[float]) -> go.Scatter:
         name='Line of Best Fit',
         line=dict(color='firebrick', width=2),
         showlegend=True,
-        visible=visibility
+        visible=visibility,
+        hoverinfo='skip'
     )
 
     return lobf
@@ -272,25 +262,25 @@ def get_data(countries: list[Country], factor: str) -> list[list]:
         - factor in ['Unemployment', 'Consumer Price Index', 'Income']
     """
     # Get the proper y-values, depending on the factor input
+    # Dividing some values by 100 to get decimal values that will later be converted to
+    # percentages on the plot
     if factor == 'Food Insecurity':
         data = [(country.confirmed_cases, country.food_insecurity, country.name)
                 for country in countries]
     elif factor == 'Unemployment':
-        data = [(country.confirmed_cases, country.unemployment, country.name)
+        data = [(country.confirmed_cases, country.unemployment / 100, country.name)
                 for country in countries]
     elif factor == 'Consumer Price Index':
         data = [(country.confirmed_cases, country.cpi, country.name)
                 for country in countries]
     else:  # factor == 'Income'
-        data = [(country.confirmed_cases, country.income * 100, country.name)
+        data = [(country.confirmed_cases, country.income, country.name)
                 for country in countries]
     data.sort()
 
     # Unpacking the data for the 8 specific countries
-    # Dividing by 100 to get decimal values that will later be converted to percentages on
-    # the plot
     x_values = [value[0] / 100 for value in data]
-    y_values = [value[1] / 100 for value in data]
+    y_values = [value[1] for value in data]
     countries = [value[2] for value in data]
 
     return [x_values, y_values, countries]
@@ -312,7 +302,7 @@ def plot_fi_all(x_values: list[float], y_values: list[float], countries: list[st
         text=countries,
         hovertemplate='<b>%{text}</b><br><br>' +
                       'Confirmed Cases: %{x:.2%}<br>' +
-                      'Food Insecurity: %{y:.1%}<br>' +
+                      'Food Insecurity: %{y:}<br>' +
                       '<extra></extra>',
         showlegend=True,
         visible=True
@@ -341,7 +331,7 @@ def data_fi_all(food_insecurity: FoodInsecurity, confirmed_cases: dict[str, floa
         # Only get data for the countries in both food_insecurity.percentages and confirmed_cases
         if country in confirmed_cases:
             x_values.append(confirmed_cases[country] / 100)
-            y_values.append(food_insecurity.percentages[country] / 100)
+            y_values.append(food_insecurity.percentages[country])
             countries_so_far.append(country)
 
     return [x_values, y_values, countries_so_far]
